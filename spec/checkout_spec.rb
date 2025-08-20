@@ -120,19 +120,69 @@ RSpec.describe Checkout do
       end
     end
 
+    context 'with custom pricing rules' do
+      let(:pricing_rules) do
+        [
+          PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 5, discounted_price_in_pence: 250),
+          PricingRule::FractionalDiscount.new(product_code: 'SR1', min_quantity: 2, numerator: 1, denominator: 2),
+          PricingRule::BuyOneGetOneFree.new(product_code: 'CF1')
+        ]
+      end
+
+      it 'applies a custom bulk discount for Green Tea' do
+        5.times { checkout.scan(gr1) }
+        # Custom rule: 5 * 250 = 1250p
+        expect(checkout.total).to eq('£12.50')
+      end
+
+      it 'applies a 50% discount for Strawberries' do
+        3.times { checkout.scan(sr1) }
+        # Custom fractional: (3 * 500 * 1/2).round = 750p
+        expect(checkout.total).to eq('£7.50')
+      end
+
+      it 'applies BOGOF for Coffee' do
+        3.times { checkout.scan(cf1) }
+        # BOGOF: pay for 2 items = 2 * 1123 = 2246p
+        expect(checkout.total).to eq('£22.46')
+      end
+
+      it 'applies the best rule for each product in a mixed cart' do
+        3.times { checkout.scan(gr1) } # Below threshold for bulk, so 3 * 311 = 933p
+        2.times { checkout.scan(sr1) } # 50% discount: (2 * 500 * 1/2).round = 500p
+        4.times { checkout.scan(cf1) } # BOGOF: pay for 2 = 2 * 1123 = 2246p
+        # Total: 933 + 500 + 2246 = 3679p
+        expect(checkout.total).to eq('£36.79')
+      end
+    end
+
     context 'with competing pricing rules for the same product' do
       let(:pricing_rules) do
         [
           PricingRule::BuyOneGetOneFree.new(product_code: 'GR1'),
-          PricingRule::FractionalDiscount.new(product_code: 'GR1', min_quantity: 4, numerator: 1, denominator: 3)
+          PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 5, discounted_price_in_pence: 150),
+          PricingRule::FractionalDiscount.new(product_code: 'GR1', min_quantity: 3, numerator: 9, denominator: 10) # 10% off
         ]
       end
 
-      it 'chooses the most beneficial rule for the customer' do
-        4.times { checkout.scan(gr1) }
-        # BOGOF: 2 * 311 = 622p
-        # Fractional: (4 * 311 * 1/3).round = 415p <- This is cheaper
-        expect(checkout.total).to eq('£4.15')
+      context 'with 4 items' do
+        it 'chooses the cheapest rule (BOGOF)' do
+          4.times { checkout.scan(gr1) }
+          # BOGOF: 2 * 311 = 622p <- Cheapest
+          # Bulk: N/A
+          # Fractional 10% off: (4 * 311 * 9/10).round = 1120p
+          expect(checkout.total).to eq('£6.22')
+        end
+      end
+
+      context 'with 6 items' do
+        it 'chooses the cheapest rule (Bulk Discount)' do
+          6.times { checkout.scan(gr1) }
+          # BOGOF: 3 * 311 = 933p
+          # Bulk: 6 * 150 = 900p <- Cheapest
+          # Fractional 10% off: (6 * 311 * 9/10).round = 1679p
+          expect(checkout.total).to eq('£9.00')
+        end
       end
     end
   end
