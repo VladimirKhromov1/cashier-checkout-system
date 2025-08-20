@@ -1,38 +1,38 @@
 require_relative 'catalog'
-require_relative 'validators/scanned_item_validator'
-require_relative 'services/scanned_item_price_calculator'
+require_relative 'services/scanned_product_amount_calculator'
+require_relative 'validators/scanned_product_validator'
 
 class Checkout
-  def initialize(pricing_rules = [])
-    @pricing_rules = pricing_rules
-    @scanned_items = Hash.new(0)
+  def initialize(discount_rules: [])
+    @discount_rules = discount_rules
+    @scanned_products = Hash.new(0)
   end
 
-  def scan(product)
-    ScannedItemValidator.new(product_item: product).validate!
-    @scanned_items[product.code] += 1
+  def scan(product:)
+    ScannedProductValidator.new(product: product).validate!
+    @scanned_products[product.code] += 1
   end
 
   def total
-    total_pence = calculate_total_pence
-    format_currency(total_pence)
+    total_amount = calculate_total_amount
+    format_currency(total_amount)
   end
 
   private
 
-  attr_reader :pricing_rules, :scanned_items
+  attr_reader :discount_rules, :scanned_products
 
-  def calculate_total_pence
-    scanned_items.sum do |code, quantity|
-      ScannedItemPriceCalculator.new(
-        product_code: code,
+  def calculate_total_amount
+    scanned_products.sum do |product_code, quantity|
+      ScannedProductAmountCalculator.new(
+        product_code: product_code,
         quantity: quantity,
-        rules: pricing_rules
+        rules: discount_rules
       ).call
     end
   end
 
-  def format_currency(pence)
-    format('£%.2f', pence / 100.0)
+  def format_currency(amount)
+    format('£%.2f', amount / 100.0)
   end
 end

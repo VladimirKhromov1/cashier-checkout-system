@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-RSpec.describe PricingRule::FractionalDiscount do
-  subject(:rule) { described_class.new(product_code: 'CF1', min_quantity: 3, numerator: 2, denominator: 3) }
+RSpec.describe DiscountRules::FractionalDiscount do
+  subject(:rule) { described_class.new(product_code: 'CF1', required_quantity: 3, numerator: 2, denominator: 3) }
 
-  let(:cf1) { Catalog.find('CF1') }
+  let(:cf1) { Catalog.find_product(product_code: 'CF1') }
 
   describe '#initialize' do
-    it 'inherits from PricingRule::Base' do
-      expect(rule).to be_a(PricingRule::Base)
+    it 'inherits from DiscountRules::Base' do
+      expect(rule).to be_a(DiscountRules::Base)
     end
 
     it 'is frozen' do
@@ -15,17 +15,17 @@ RSpec.describe PricingRule::FractionalDiscount do
     end
 
     context 'with validations' do
-      let(:base_params) { { product_code: 'CF1', min_quantity: 3, numerator: 2, denominator: 3 } }
+      let(:base_params) { { product_code: 'CF1', required_quantity: 3, numerator: 2, denominator: 3 } }
 
-      context 'for min_quantity' do
+      context 'for required_quantity' do
         it 'raises error if not an integer' do
-          params = base_params.merge(min_quantity: 'invalid')
-          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Minimum quantity must be an Integer')
+          params = base_params.merge(required_quantity: 'invalid')
+          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Required quantity must be an Integer')
         end
 
         it 'raises error if not positive' do
-          params = base_params.merge(min_quantity: 0)
-          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Minimum quantity must be positive')
+          params = base_params.merge(required_quantity: 0)
+          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Required quantity must be positive')
         end
       end
 
@@ -53,28 +53,28 @@ RSpec.describe PricingRule::FractionalDiscount do
     end
   end
 
-  describe '#total_price' do
+  describe '#total_amount' do
     context 'when quantity is below threshold' do
       # 1 item = regular price = 1 * 1123 = 1123
       it 'charges regular price for 1 item' do
-        expect(rule.total_price(cf1, 1)).to eq(1123)
+        expect(rule.total_amount(product: cf1, quantity: 1)).to eq(1123)
       end
 
       # 2 items = regular price = 2 * 1123 = 2246
       it 'charges regular price for 2 items' do
-        expect(rule.total_price(cf1, 2)).to eq(2246)
+        expect(rule.total_amount(product: cf1, quantity: 2)).to eq(2246)
       end
     end
 
     context 'when quantity meets or exceeds threshold' do
       # 3 items = discounted price = 3 * (1123 * 2/3) = 3369 * 2/3 = 2246
       it 'applies fractional discount for 3 items' do
-        expect(rule.total_price(cf1, 3)).to eq(2246)
+        expect(rule.total_amount(product: cf1, quantity: 3)).to eq(2246)
       end
 
       # 4 items = discounted price = 4 * (1123 * 2/3) = 4492 * 2/3 = 2995
       it 'applies fractional discount for 4 items' do
-        expect(rule.total_price(cf1, 4)).to eq(2995)
+        expect(rule.total_amount(product: cf1, quantity: 4)).to eq(2995)
       end
     end
   end

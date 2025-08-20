@@ -3,7 +3,7 @@
 require_relative '../support/type_validator'
 require_relative '../catalog'
 
-module PricingRule
+module DiscountRules
   class Base
     attr_reader :product_code
 
@@ -11,19 +11,19 @@ module PricingRule
       @product_code = validate_code!(product_code)
     end
 
-    def applies_to?(product)
+    def applies_to?(product:)
       product.code == product_code
     end
 
-    def total_price(_product, _quantity)
-      raise NotImplementedError, "The logic must be implemented in the subclasses of PricingRule::Base"
+    def total_amount(product:, quantity:)
+      raise NotImplementedError, "The logic must be implemented in the subclasses of DiscountRules::Base"
     end
 
     private
 
-    def validate_code!(code)
-      c = TypeValidator.validate_string_field!(code, 'Product code for rule')
-      unless Catalog.exists?(c)
+    def validate_code!(product_code)
+      c = TypeValidator.validate_string_field!(product_code, 'Product code for rule')
+      unless Catalog.product_exists?(product_code: c)
         known_products = Catalog::PRODUCTS.keys.join(', ')
         raise ArgumentError, "Rule cannot be created for unknown product: '#{c}'. Known products: #{known_products}"
       end

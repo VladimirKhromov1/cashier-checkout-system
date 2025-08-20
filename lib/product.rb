@@ -3,12 +3,12 @@ require_relative 'support/type_validator'
 class Product
   SUPPORTED_CURRENCIES = ['GBP'].freeze
 
-  attr_reader :code, :name, :price_in_pence, :currency
+  attr_reader :code, :name, :amount, :currency
 
-  def initialize(code:, name:, price_in_pence:, currency:)
+  def initialize(code:, name:, amount:, currency:)
     @code = TypeValidator.validate_string_field!(code, 'Product code')
     @name = TypeValidator.validate_string_field!(name, 'Product name')
-    @price_in_pence = TypeValidator.validate_number_field!(price_in_pence, 'Price in pence')
+    @amount = TypeValidator.validate_number_field!(amount, 'Amount')
     @currency = validate_currency!(currency)
     freeze
   end

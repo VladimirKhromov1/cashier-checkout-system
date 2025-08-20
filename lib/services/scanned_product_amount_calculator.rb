@@ -1,6 +1,6 @@
 require_relative '../catalog'
 
-class ScannedItemPriceCalculator
+class ScannedProductAmountCalculator
   def initialize(product_code:, quantity:, rules:)
     @product_code = product_code
     @quantity = quantity
@@ -11,9 +11,9 @@ class ScannedItemPriceCalculator
     best_rule = find_most_beneficial_rule
 
     if best_rule
-      best_rule.total_price(product, quantity)
+      best_rule.total_amount(product: product, quantity: quantity)
     else
-      product.price_in_pence * quantity
+      product.amount * quantity
     end
   end
 
@@ -22,15 +22,15 @@ class ScannedItemPriceCalculator
   attr_reader :product_code, :quantity, :rules
 
   def product
-    Catalog.find(product_code)
+    Catalog.find_product(product_code: product_code)
   end
 
   def find_most_beneficial_rule
-    applicable_rules = rules.select { |rule| rule.applies_to?(product) }
+    applicable_rules = rules.select { |rule| rule.applies_to?(product: product) }
     return nil if applicable_rules.empty?
 
     applicable_rules.min_by do |rule|
-      rule.total_price(product, quantity)
+      rule.total_amount(product: product, quantity: quantity)
     end
   end
 end

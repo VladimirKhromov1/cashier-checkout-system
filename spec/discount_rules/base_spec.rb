@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe PricingRule::Base do
+RSpec.describe DiscountRules::Base do
   subject(:pricing_rule) { described_class.new(product_code: product_code) }
 
   let(:product_code) { 'GR1' }
@@ -46,28 +46,28 @@ RSpec.describe PricingRule::Base do
   end
 
   describe '#applies_to?' do
-    let(:green_tea) { Catalog.find('GR1') }
-    let(:strawberries) { Catalog.find('SR1') }
+    let(:green_tea) { Catalog.find_product(product_code: 'GR1') }
+    let(:strawberries) { Catalog.find_product(product_code: 'SR1') }
 
     context 'when product matches rule product code' do
       it 'returns true' do
-        expect(pricing_rule.applies_to?(green_tea)).to be true
+        expect(pricing_rule.applies_to?(product: green_tea)).to be true
       end
     end
 
     context 'when product does not match rule product code' do
       it 'returns false' do
-        expect(pricing_rule.applies_to?(strawberries)).to be false
+        expect(pricing_rule.applies_to?(product: strawberries)).to be false
       end
     end
   end
 
-  describe '#total_price' do
-    let(:product) { Catalog.find('GR1') }
+  describe '#total_amount' do
+    let(:product) { Catalog.find_product(product_code: 'GR1') }
     let(:quantity) { 1 }
 
     it 'raises NotImplementedError as base implementation' do
-      expect { pricing_rule.total_price(product, quantity) }
+      expect { pricing_rule.total_amount(product: product, quantity: quantity) }
         .to raise_error(NotImplementedError, /must be implemented in the subclasses/)
     end
   end

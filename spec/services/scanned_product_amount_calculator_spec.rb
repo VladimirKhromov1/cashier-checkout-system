@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-RSpec.describe ScannedItemPriceCalculator do
+RSpec.describe ScannedProductAmountCalculator do
   subject(:calculator) { described_class.new(product_code: product_code, quantity: quantity, rules: rules) }
 
   let(:product_code) { 'GR1' }
   let(:quantity) { 1 }
   let(:rules) { [] }
 
-  let(:bogof_rule) { PricingRule::BuyOneGetOneFree.new(product_code: 'GR1') }
-  let(:bulk_rule_sr1) { PricingRule::BulkDiscount.new(product_code: 'SR1', min_quantity: 3, discounted_price_in_pence: 450) }
-  let(:bulk_rule_gr1) { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 2, discounted_price_in_pence: 280) }
+  let(:bogof_rule) { DiscountRules::BuyOneGetOneFree.new(product_code: 'GR1') }
+  let(:bulk_rule_sr1) { DiscountRules::BulkDiscount.new(product_code: 'SR1', required_quantity: 3, discounted_amount: 450) }
+  let(:bulk_rule_gr1) { DiscountRules::BulkDiscount.new(product_code: 'GR1', required_quantity: 2, discounted_amount: 280) }
 
   describe '#call' do
     context 'when no rules are applicable' do

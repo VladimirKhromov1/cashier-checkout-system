@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe Catalog do
-  describe '.find' do
-    subject(:find_product) { described_class.find(product_code) }
+  describe '.find_product' do
+    subject(:find_product) { described_class.find_product(product_code: product_code) }
 
     context 'when the product exists' do
       let(:product_code) { 'GR1' }
@@ -12,7 +12,7 @@ RSpec.describe Catalog do
         expect(product).to be_a(Product)
         expect(product.code).to eq('GR1')
         expect(product.name).to eq('Green tea')
-        expect(product.price_in_pence).to eq(311)
+        expect(product.amount).to eq(311)
         expect(product.currency).to eq('GBP')
       end
 
@@ -30,8 +30,8 @@ RSpec.describe Catalog do
     end
   end
 
-  describe '.exists?' do
-    subject(:product_exists) { described_class.exists?(product_code) }
+  describe '.product_exists?' do
+    subject(:product_exists) { described_class.product_exists?(product_code: product_code) }
 
     context 'when the product exists' do
       let(:product_code) { 'GR1' }

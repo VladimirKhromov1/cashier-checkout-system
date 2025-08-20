@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 RSpec.describe Product do
-  subject(:product) { described_class.new(code: code, name: name, price_in_pence: price, currency: currency) }
+  subject(:product) { described_class.new(code: code, name: name, amount: amount, currency: currency) }
 
   let(:code) { 'GR1' }
   let(:name) { 'Green Tea' }
-  let(:price) { 311 }
+  let(:amount) { 311 }
   let(:currency) { 'GBP' }
 
   describe '#initialize' do
@@ -18,8 +18,8 @@ RSpec.describe Product do
         expect(product.name).to eq('Green Tea')
       end
 
-      it 'assigns the price in pence' do
-        expect(product.price_in_pence).to eq(311)
+      it 'assigns the amount' do
+        expect(product.amount).to eq(311)
       end
 
       context 'when the currency is lowercase' do
@@ -50,10 +50,10 @@ RSpec.describe Product do
         end
       end
 
-      context 'when the price is not a positive integer' do
-        let(:price) { 0 }
+      context 'when the amount is not a positive integer' do
+        let(:amount) { 0 }
         it 'raises an ArgumentError' do
-          expect { product }.to raise_error(ArgumentError, 'Price in pence must be positive')
+          expect { product }.to raise_error(ArgumentError, 'Amount must be positive')
         end
       end
     end

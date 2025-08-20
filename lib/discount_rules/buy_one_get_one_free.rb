@@ -2,18 +2,18 @@
 
 require_relative 'base'
 
-module PricingRule
+module DiscountRules
   class BuyOneGetOneFree < Base
     def initialize(product_code:)
       super(product_code: product_code)
       freeze
     end
 
-    def total_price(product, quantity)
+    def total_amount(product:, quantity:)
       return 0 if quantity <= 0
 
       paid_items = (quantity + 1) / 2
-      paid_items * product.price_in_pence
+      paid_items * product.amount
     end
   end
 end
