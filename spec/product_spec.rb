@@ -10,16 +10,13 @@ RSpec.describe Product do
 
   describe '#initialize' do
     context 'with valid attributes' do
-      it 'assigns the code' do
-        expect(product.code).to eq('GR1')
-      end
-
-      it 'assigns the name' do
-        expect(product.name).to eq('Green Tea')
-      end
-
-      it 'assigns the amount' do
-        expect(product.amount).to eq(311)
+      it 'assigns all attributes correctly' do
+        expect(product).to have_attributes(
+          code: 'GR1',
+          name: 'Green Tea',
+          amount: 311,
+          currency: 'GBP'
+        )
       end
 
       context 'when the currency is lowercase' do

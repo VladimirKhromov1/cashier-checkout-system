@@ -7,13 +7,17 @@ RSpec.describe Catalog do
     context 'when the product exists' do
       let(:product_code) { 'GR1' }
 
-      it 'returns the correct product instance' do
-        product = find_product
-        expect(product).to be_a(Product)
-        expect(product.code).to eq('GR1')
-        expect(product.name).to eq('Green tea')
-        expect(product.amount).to eq(311)
-        expect(product.currency).to eq('GBP')
+      it 'returns a Product instance' do
+        expect(find_product).to be_a(Product)
+      end
+
+      it 'returns the product with correct attributes' do
+        expect(find_product).to have_attributes(
+          code: 'GR1',
+          name: 'Green tea',
+          amount: 311,
+          currency: 'GBP'
+        )
       end
 
       it 'returns a frozen product object' do

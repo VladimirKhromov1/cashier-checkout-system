@@ -15,38 +15,35 @@ RSpec.describe DiscountRules::FractionalDiscount do
     end
 
     context 'with validations' do
-      let(:base_params) { { product_code: 'CF1', required_quantity: 3, numerator: 2, denominator: 3 } }
-
       context 'for required_quantity' do
         it 'raises error if not an integer' do
-          params = base_params.merge(required_quantity: 'invalid')
-          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Required quantity must be an Integer')
+          expect { described_class.new(product_code: 'CF1', required_quantity: 'invalid', numerator: 2, denominator: 3) }
+            .to raise_error(ArgumentError, 'Required quantity must be an Integer')
         end
 
         it 'raises error if not positive' do
-          params = base_params.merge(required_quantity: 0)
-          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Required quantity must be positive')
+          expect { described_class.new(product_code: 'CF1', required_quantity: 0, numerator: 2, denominator: 3) }
+            .to raise_error(ArgumentError, 'Required quantity must be positive')
         end
       end
 
       context 'for numerator' do
         it 'raises error if not an integer' do
-          params = base_params.merge(numerator: 'invalid')
-          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Numerator must be an Integer')
+          expect { described_class.new(product_code: 'CF1', required_quantity: 3, numerator: 'invalid', denominator: 3) }
+            .to raise_error(ArgumentError, 'Numerator must be an Integer')
         end
       end
 
       context 'for denominator' do
         it 'raises error if not an integer' do
-          params = base_params.merge(denominator: 'invalid')
-          expect { described_class.new(**params) }.to raise_error(ArgumentError, 'Denominator must be an Integer')
+          expect { described_class.new(product_code: 'CF1', required_quantity: 3, numerator: 2, denominator: 'invalid') }
+            .to raise_error(ArgumentError, 'Denominator must be an Integer')
         end
       end
 
       context 'for ratio' do
         it 'raises error if numerator is not less than denominator' do
-          params = base_params.merge(numerator: 5, denominator: 3)
-          expect { described_class.new(**params) }
+          expect { described_class.new(product_code: 'CF1', required_quantity: 3, numerator: 5, denominator: 3) }
             .to raise_error(ArgumentError, /Numerator .* must be less than denominator .* for a discount rule/)
         end
       end
