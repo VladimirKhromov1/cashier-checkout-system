@@ -1,56 +1,57 @@
 require 'spec_helper'
 
 RSpec.describe ScannedItemPriceCalculator do
+  subject(:calculator) { described_class.new(product_code: product_code, quantity: quantity, rules: rules) }
+
+  let(:product_code) { 'GR1' }
+  let(:quantity) { 1 }
+  let(:rules) { [] }
+
+  let(:bogof_rule) { PricingRule::BuyOneGetOneFree.new(product_code: 'GR1') }
+  let(:bulk_rule_sr1) { PricingRule::BulkDiscount.new(product_code: 'SR1', min_quantity: 3, discounted_price_in_pence: 450) }
+  let(:bulk_rule_gr1) { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 2, discounted_price_in_pence: 280) }
+
   describe '#call' do
-    let(:bogof_rule) { PricingRule::BuyOneGetOneFree.new(product_code: 'GR1') }
-    let(:bulk_rule) { PricingRule::BulkDiscount.new(product_code: 'SR1', min_quantity: 3, discounted_price_in_pence: 450) }
-    let(:alternative_rule) { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 2, discounted_price_in_pence: 280) }
+    context 'when no rules are applicable' do
+      let(:quantity) { 2 }
 
-    context 'when no applicable rules' do
-      it 'returns regular price calculation' do
-        calculator = ScannedItemPriceCalculator.new(
-          product_code: 'GR1',
-          quantity: 2,
-          rules: []
-        )
-
-        expect(calculator.call).to eq(622) # 311 * 2
+      it 'returns the regular price' do
+        # 2 items * 311 pence = 622
+        expect(calculator.call).to eq(622)
       end
     end
 
-    context 'when single rule applies' do
-      it 'calculates discounted price with BOGOF rule' do
-        calculator = ScannedItemPriceCalculator.new(
-          product_code: 'GR1',
-          quantity: 3,
-          rules: [bogof_rule]
-        )
+    context 'when a single rule is applicable' do
+      context 'with Buy One Get One Free rule' do
+        let(:quantity) { 3 }
+        let(:rules) { [bogof_rule] }
 
-        expect(calculator.call).to eq(622) # pay for 2 items: 311 * 2
+        it 'applies the BOGOF discount' do
+          # Pay for 2 items: 2 * 311 pence = 622
+          expect(calculator.call).to eq(622)
+        end
       end
 
-      it 'calculates bulk discounted price' do
-        calculator = ScannedItemPriceCalculator.new(
-          product_code: 'SR1',
-          quantity: 3,
-          rules: [bulk_rule]
-        )
+      context 'with Bulk Discount rule' do
+        let(:product_code) { 'SR1' }
+        let(:quantity) { 3 }
+        let(:rules) { [bulk_rule_sr1] }
 
-        expect(calculator.call).to eq(1350) # 450 * 3
+        it 'applies the bulk discount' do
+          # 3 items * 450 pence = 1350
+          expect(calculator.call).to eq(1350)
+        end
       end
     end
 
-    context 'when multiple rules apply to the same product' do
-      it 'chooses the most beneficial rule for customer' do
-        calculator = ScannedItemPriceCalculator.new(
-          product_code: 'GR1',
-          quantity: 4,
-          rules: [alternative_rule, bogof_rule]
-        )
+    context 'when multiple rules apply' do
+      let(:quantity) { 4 }
+      let(:rules) { [bulk_rule_gr1, bogof_rule] }
 
-        # BOGOF: pay for 2 items = 622 pence
-        # Bulk: pay 280 * 4 = 1120 pence
-        # Should choose BOGOF as it's cheaper
+      it 'chooses the most beneficial rule for the customer' do
+        # BOGOF: pay for 2 items = 2 * 311 = 622 pence
+        # Bulk: pay 4 * 280 = 1120 pence
+        # The BOGOF rule is cheaper, so it should be chosen.
         expect(calculator.call).to eq(622)
       end
     end

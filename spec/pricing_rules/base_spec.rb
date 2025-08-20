@@ -1,53 +1,73 @@
 require 'spec_helper'
 
 RSpec.describe PricingRule::Base do
+  subject(:pricing_rule) { described_class.new(product_code: product_code) }
+
+  let(:product_code) { 'GR1' }
+
   describe '#initialize' do
-    it 'initializes with valid product code using keyword argument' do
-      rule = PricingRule::Base.new(product_code: 'GR1')
-      expect(rule.product_code).to eq('GR1')
+    context 'when product code is valid' do
+      it 'sets the product code' do
+        expect(pricing_rule.product_code).to eq('GR1')
+      end
     end
 
-    context 'validations' do
-      it 'validates product code is a string' do
-        expect { PricingRule::Base.new(product_code: 123) }
-          .to raise_error(ArgumentError, 'Product code for rule must be a String')
+    context 'when product code is invalid' do
+      context 'when not a string' do
+        let(:product_code) { 123 }
+
+        it 'raises ArgumentError' do
+          expect { pricing_rule }
+            .to raise_error(ArgumentError, 'Product code for rule must be a String')
+        end
       end
 
-      it 'validates product code is not empty' do
-        expect { PricingRule::Base.new(product_code: '   ') }
-          .to raise_error(ArgumentError, 'Product code for rule cannot be empty')
+      context 'when empty or whitespace' do
+        let(:product_code) { '   ' }
+
+        it 'raises ArgumentError' do
+          expect { pricing_rule }
+            .to raise_error(ArgumentError, 'Product code for rule cannot be empty')
+        end
       end
 
-      it 'raises error for unknown product code' do
-        known_products = Catalog::PRODUCTS.keys.join(', ')
-        expected_message = "Rule cannot be created for unknown product: 'UNKNOWN'. Known products: #{known_products}"
+      context 'when product does not exist in catalog' do
+        let(:product_code) { 'UNKNOWN' }
 
-        expect { PricingRule::Base.new(product_code: 'UNKNOWN') }
-          .to raise_error(ArgumentError, expected_message)
+        it 'raises ArgumentError with helpful message' do
+          known_products = Catalog::PRODUCTS.keys.join(', ')
+          expected_message = "Rule cannot be created for unknown product: 'UNKNOWN'. Known products: #{known_products}"
+
+          expect { pricing_rule }
+            .to raise_error(ArgumentError, expected_message)
+        end
       end
     end
   end
 
   describe '#applies_to?' do
-    let(:rule) { PricingRule::Base.new(product_code: 'GR1') }
-    let(:gr1) { Catalog.find('GR1') }
-    let(:sr1) { Catalog.find('SR1') }
+    let(:green_tea) { Catalog.find('GR1') }
+    let(:strawberries) { Catalog.find('SR1') }
 
-    it 'returns true for matching product' do
-      expect(rule.applies_to?(gr1)).to be true
+    context 'when product matches rule product code' do
+      it 'returns true' do
+        expect(pricing_rule.applies_to?(green_tea)).to be true
+      end
     end
 
-    it 'returns false for non-matching product' do
-      expect(rule.applies_to?(sr1)).to be false
+    context 'when product does not match rule product code' do
+      it 'returns false' do
+        expect(pricing_rule.applies_to?(strawberries)).to be false
+      end
     end
   end
 
   describe '#total_price' do
-    let(:rule) { PricingRule::Base.new(product_code: 'GR1') }
     let(:product) { Catalog.find('GR1') }
+    let(:quantity) { 1 }
 
-    it 'raises NotImplementedError' do
-      expect { rule.total_price(product, 1) }
+    it 'raises NotImplementedError as base implementation' do
+      expect { pricing_rule.total_price(product, quantity) }
         .to raise_error(NotImplementedError, /must be implemented in the subclasses/)
     end
   end

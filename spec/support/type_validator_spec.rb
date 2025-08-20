@@ -2,36 +2,70 @@ require 'spec_helper'
 
 RSpec.describe TypeValidator do
   describe '.validate_string_field!' do
-    it 'returns the string when valid' do
-      result = TypeValidator.validate_string_field!('valid_string', 'Test field')
-      expect(result).to eq('valid_string')
+    subject(:validate) { described_class.validate_string_field!(value, field_name) }
+
+    let(:field_name) { 'Test Field' }
+
+    context 'when the string is valid' do
+      let(:value) { 'valid_string' }
+
+      it 'returns the string' do
+        expect(validate).to eq('valid_string')
+      end
     end
 
-    it 'raises ArgumentError when value is not a string' do
-      expect { TypeValidator.validate_string_field!(123, 'Test field') }
-        .to raise_error(ArgumentError, 'Test field must be a String')
+    context 'when the value is not a string' do
+      let(:value) { 123 }
+
+      it 'raises an ArgumentError' do
+        expect { validate }.to raise_error(ArgumentError, 'Test Field must be a String')
+      end
     end
 
-    it 'raises ArgumentError when string is empty' do
-      expect { TypeValidator.validate_string_field!('   ', 'Test field') }
-        .to raise_error(ArgumentError, 'Test field cannot be empty')
+    context 'when the string is empty or whitespace' do
+      let(:value) { '   ' }
+
+      it 'raises an ArgumentError' do
+        expect { validate }.to raise_error(ArgumentError, 'Test Field cannot be empty')
+      end
     end
   end
 
   describe '.validate_number_field!' do
-    it 'returns the integer when valid' do
-      result = TypeValidator.validate_number_field!(42, 'Test field')
-      expect(result).to eq(42)
+    subject(:validate) { described_class.validate_number_field!(value, field_name) }
+
+    let(:field_name) { 'Test Field' }
+
+    context 'when the number is a valid positive integer' do
+      let(:value) { 42 }
+
+      it 'returns the integer' do
+        expect(validate).to eq(42)
+      end
     end
 
-    it 'raises ArgumentError when value is not an integer' do
-      expect { TypeValidator.validate_number_field!('42', 'Test field') }
-        .to raise_error(ArgumentError, 'Test field must be an Integer')
+    context 'when the value is not an integer' do
+      let(:value) { '42' }
+
+      it 'raises an ArgumentError' do
+        expect { validate }.to raise_error(ArgumentError, 'Test Field must be an Integer')
+      end
     end
 
-    it 'raises ArgumentError when integer is not positive' do
-      expect { TypeValidator.validate_number_field!(0, 'Test field') }
-        .to raise_error(ArgumentError, 'Test field must be positive')
+    context 'when the integer is zero' do
+      let(:value) { 0 }
+
+      it 'raises an ArgumentError for not being positive' do
+        expect { validate }.to raise_error(ArgumentError, 'Test Field must be positive')
+      end
+    end
+
+    context 'when the integer is negative' do
+      let(:value) { -1 }
+
+      it 'raises an ArgumentError for not being positive' do
+        expect { validate }.to raise_error(ArgumentError, 'Test Field must be positive')
+      end
     end
   end
 end

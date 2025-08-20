@@ -1,39 +1,61 @@
 require 'spec_helper'
 
 RSpec.describe Product do
+  subject(:product) { described_class.new(code: code, name: name, price_in_pence: price, currency: currency) }
+
+  let(:code) { 'GR1' }
+  let(:name) { 'Green Tea' }
+  let(:price) { 311 }
+  let(:currency) { 'GBP' }
+
   describe '#initialize' do
-    it 'creates a product with basic attributes' do
-      product = Product.new(code: 'GR1', name: 'Green Tea', price_in_pence: 311, currency: 'GBP')
+    context 'with valid attributes' do
+      it 'assigns the code' do
+        expect(product.code).to eq('GR1')
+      end
 
-      expect(product.code).to eq('GR1')
-      expect(product.name).to eq('Green Tea')
-      expect(product.price_in_pence).to eq(311)
-      expect(product.currency).to eq('GBP')
+      it 'assigns the name' do
+        expect(product.name).to eq('Green Tea')
+      end
+
+      it 'assigns the price in pence' do
+        expect(product.price_in_pence).to eq(311)
+      end
+
+      context 'when the currency is lowercase' do
+        let(:currency) { 'gbp' }
+
+        it 'assigns and uppercases the currency' do
+          expect(product.currency).to eq('GBP')
+        end
+      end
+
+      it 'freezes the instance' do
+        expect(product).to be_frozen
+      end
     end
 
-    it 'freezes the product instance' do
-      product = Product.new(code: 'GR1', name: 'Green Tea', price_in_pence: 311, currency: 'GBP')
-      expect(product).to be_frozen
-    end
+    context 'with invalid attributes' do
+      context 'when the code is not a string' do
+        let(:code) { 123 }
+        it 'raises an ArgumentError' do
+          expect { product }.to raise_error(ArgumentError, 'Product code must be a String')
+        end
+      end
 
-    it 'validates product code as string' do
-      expect { Product.new(code: 123, name: 'Green Tea', price_in_pence: 311, currency: 'GBP') }
-        .to raise_error(ArgumentError, 'Product code must be a String')
-    end
+      context 'when the name is an empty string' do
+        let(:name) { '   ' }
+        it 'raises an ArgumentError' do
+          expect { product }.to raise_error(ArgumentError, 'Product name cannot be empty')
+        end
+      end
 
-    it 'validates product name as non-empty string' do
-      expect { Product.new(code: 'GR1', name: '   ', price_in_pence: 311, currency: 'GBP') }
-        .to raise_error(ArgumentError, 'Product name cannot be empty')
-    end
-
-    it 'validates price as positive integer' do
-      expect { Product.new(code: 'GR1', name: 'Green Tea', price_in_pence: 0, currency: 'GBP') }
-        .to raise_error(ArgumentError, 'Price in pence must be positive')
-    end
-
-    it 'validates currency and converts to uppercase' do
-      product = Product.new(code: 'GR1', name: 'Green Tea', price_in_pence: 311, currency: 'gbp')
-      expect(product.currency).to eq('GBP')
+      context 'when the price is not a positive integer' do
+        let(:price) { 0 }
+        it 'raises an ArgumentError' do
+          expect { product }.to raise_error(ArgumentError, 'Price in pence must be positive')
+        end
+      end
     end
   end
 end
