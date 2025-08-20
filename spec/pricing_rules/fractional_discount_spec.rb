@@ -8,6 +8,40 @@ RSpec.describe PricingRule::FractionalDiscount do
     it 'inherits from PricingRule::Base' do
       expect(rule).to be_a(PricingRule::Base)
     end
+
+    context 'freeze protection' do
+      it 'freezes the instance after initialization' do
+        rule = PricingRule::FractionalDiscount.new('CF1', min_quantity: 3, numerator: 2, denominator: 3)
+        expect(rule).to be_frozen
+      end
+    end
+
+    context 'validations' do
+      it 'validates min_quantity is a positive integer' do
+        expect { PricingRule::FractionalDiscount.new('CF1', min_quantity: 'invalid', numerator: 2, denominator: 3) }
+          .to raise_error(ArgumentError, 'Minimum quantity must be an Integer')
+      end
+
+      it 'validates min_quantity is positive' do
+        expect { PricingRule::FractionalDiscount.new('CF1', min_quantity: 0, numerator: 2, denominator: 3) }
+          .to raise_error(ArgumentError, 'Minimum quantity must be positive')
+      end
+
+      it 'validates numerator is a positive integer' do
+        expect { PricingRule::FractionalDiscount.new('CF1', min_quantity: 3, numerator: 'invalid', denominator: 3) }
+          .to raise_error(ArgumentError, 'Numerator must be an Integer')
+      end
+
+      it 'validates denominator is a positive integer' do
+        expect { PricingRule::FractionalDiscount.new('CF1', min_quantity: 3, numerator: 2, denominator: 'invalid') }
+          .to raise_error(ArgumentError, 'Denominator must be an Integer')
+      end
+
+      it 'validates numerator is less than denominator for discount' do
+        expect { PricingRule::FractionalDiscount.new('CF1', min_quantity: 3, numerator: 5, denominator: 3) }
+          .to raise_error(ArgumentError, /Numerator .* must be less than denominator .* for a discount rule/)
+      end
+    end
   end
 
   describe '#total_price_in_pence' do

@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require_relative 'base'
+
 module PricingRule
   class FractionalDiscount < Base
     def initialize(product_code, min_quantity:, numerator:, denominator:)
