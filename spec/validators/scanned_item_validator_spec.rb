@@ -1,6 +1,4 @@
-require_relative '../../lib/product'
-require_relative '../../lib/catalog'
-require_relative '../../lib/validators/scanned_item_validator'
+require 'spec_helper'
 
 RSpec.describe ScannedItemValidator do
   describe '#validate!' do

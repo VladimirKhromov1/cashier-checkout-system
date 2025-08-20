@@ -1,4 +1,4 @@
-require_relative '../../lib/pricing_rules/bulk_discount'
+require 'spec_helper'
 
 RSpec.describe PricingRule::BulkDiscount do
   let(:sr1) { Catalog.find('SR1') }

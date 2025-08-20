@@ -1,4 +1,4 @@
-require_relative '../../lib/pricing_rules/fractional_discount'
+require 'spec_helper'
 
 RSpec.describe PricingRule::FractionalDiscount do
   let(:cf1) { Catalog.find('CF1') }

@@ -1,4 +1,4 @@
-require_relative '../../lib/pricing_rules/base'
+require 'spec_helper'
 
 RSpec.describe PricingRule::Base do
   describe '#initialize' do

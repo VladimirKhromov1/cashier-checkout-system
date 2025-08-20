@@ -1,4 +1,4 @@
-require_relative '../../lib/pricing_rules/buy_one_get_one_free'
+require 'spec_helper'
 
 RSpec.describe PricingRule::BuyOneGetOneFree do
   let(:gr1) { Catalog.find('GR1') }

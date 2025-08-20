@@ -1,4 +1,4 @@
-require_relative '../../lib/support/type_validator'
+require 'spec_helper'
 
 RSpec.describe TypeValidator do
   describe '.validate_string!' do

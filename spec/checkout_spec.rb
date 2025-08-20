@@ -1,7 +1,4 @@
-require_relative '../lib/checkout'
-require_relative '../lib/pricing_rules/buy_one_get_one_free'
-require_relative '../lib/pricing_rules/bulk_discount'
-require_relative '../lib/pricing_rules/fractional_discount'
+require 'spec_helper'
 
 RSpec.describe Checkout do
   let(:gr1) { Catalog.find('GR1') }

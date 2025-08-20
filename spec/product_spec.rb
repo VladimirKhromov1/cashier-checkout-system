@@ -1,4 +1,4 @@
-require_relative '../lib/product'
+require 'spec_helper'
 
 RSpec.describe Product do
   describe '#initialize' do

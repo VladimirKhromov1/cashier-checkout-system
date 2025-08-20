@@ -1,4 +1,4 @@
-require_relative '../lib/catalog'
+require 'spec_helper'
 
 RSpec.describe Catalog do
   describe '.find' do
