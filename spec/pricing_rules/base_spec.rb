@@ -7,12 +7,24 @@ RSpec.describe PricingRule::Base do
       expect(rule.product_code).to eq('GR1')
     end
 
-    it 'raises error for unknown product code' do
-      known_products = Catalog::PRODUCTS.keys.join(', ')
-      expected_message = "Rule cannot be created for unknown product: 'UNKNOWN'. Known products: #{known_products}"
+    context 'validations' do
+      it 'validates product code is a string' do
+        expect { PricingRule::Base.new(123) }
+          .to raise_error(ArgumentError, 'Product code for rule must be a String')
+      end
 
-      expect { PricingRule::Base.new('UNKNOWN') }
-        .to raise_error(ArgumentError, expected_message)
+      it 'validates product code is not empty' do
+        expect { PricingRule::Base.new('   ') }
+          .to raise_error(ArgumentError, 'Product code for rule cannot be empty')
+      end
+
+      it 'raises error for unknown product code' do
+        known_products = Catalog::PRODUCTS.keys.join(', ')
+        expected_message = "Rule cannot be created for unknown product: 'UNKNOWN'. Known products: #{known_products}"
+
+        expect { PricingRule::Base.new('UNKNOWN') }
+          .to raise_error(ArgumentError, expected_message)
+      end
     end
   end
 
