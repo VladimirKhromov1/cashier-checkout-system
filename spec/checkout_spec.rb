@@ -117,4 +117,28 @@ RSpec.describe Checkout do
       end
     end
   end
+
+  context 'validations' do
+    let(:checkout) { Checkout.new }
+
+    context 'when scanning invalid items' do
+      it 'raises error when item is not a Product' do
+        expect { checkout.scan('invalid_item') }
+          .to raise_error(ArgumentError, 'Item must be a Product object, got: String')
+      end
+
+      it 'raises error when product is not canonical from catalog' do
+        fake_product = Product.new(code: 'GR1', name: 'Fake Tea', price_in_pence: 311, currency: 'GBP')
+        expect { checkout.scan(fake_product) }
+          .to raise_error(ArgumentError, 'Scanned item for code GR1 is not the canonical product from Catalog')
+      end
+    end
+
+    context 'when scanning valid items' do
+      it 'accepts valid canonical products' do
+        green_tea = Catalog.find('GR1')
+        expect { checkout.scan(green_tea) }.not_to raise_error
+      end
+    end
+  end
 end
