@@ -15,14 +15,14 @@ module PricingRule
       product.code == product_code
     end
 
-    def total_price_in_pence(_product, _quantity)
+    def total_price(_product, _quantity)
       raise NotImplementedError, "The logic must be implemented in the subclasses of PricingRule::Base"
     end
 
     private
 
     def validate_code!(code)
-      c = TypeValidator.validate_string!(code, 'Product code for rule')
+      c = TypeValidator.validate_string_field!(code, 'Product code for rule')
       unless Catalog.exists?(c)
         known_products = Catalog::PRODUCTS.keys.join(', ')
         raise ArgumentError, "Rule cannot be created for unknown product: '#{c}'. Known products: #{known_products}"

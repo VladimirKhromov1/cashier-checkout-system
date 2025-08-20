@@ -42,12 +42,12 @@ RSpec.describe PricingRule::Base do
     end
   end
 
-  describe '#total_price_in_pence' do
+  describe '#total_price' do
     let(:rule) { PricingRule::Base.new(product_code: 'GR1') }
     let(:product) { Catalog.find('GR1') }
 
     it 'raises NotImplementedError' do
-      expect { rule.total_price_in_pence(product, 1) }
+      expect { rule.total_price(product, 1) }
         .to raise_error(NotImplementedError, /must be implemented in the subclasses/)
     end
   end

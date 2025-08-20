@@ -44,25 +44,25 @@ RSpec.describe PricingRule::FractionalDiscount do
     end
   end
 
-  describe '#total_price_in_pence' do
+  describe '#total_price' do
     # 1 item = regular price = 1 * 1123 = 1123
     it 'charges regular price for 1 item' do
-      expect(rule.total_price_in_pence(cf1, 1)).to eq(1123)
+      expect(rule.total_price(cf1, 1)).to eq(1123)
     end
 
     # 2 items = regular price = 2 * 1123 = 2246
     it 'charges regular price for 2 items' do
-      expect(rule.total_price_in_pence(cf1, 2)).to eq(2246)
+      expect(rule.total_price(cf1, 2)).to eq(2246)
     end
 
     # 3 items = discounted price = 3 * (1123 * 2/3) = 3369 * 2/3 = 2246
     it 'applies fractional discount for 3 items' do
-      expect(rule.total_price_in_pence(cf1, 3)).to eq(2246)
+      expect(rule.total_price(cf1, 3)).to eq(2246)
     end
 
     # 4 items = discounted price = 4 * (1123 * 2/3) = 4492 * 2/3 = 2995
     it 'applies fractional discount for 4 items' do
-      expect(rule.total_price_in_pence(cf1, 4)).to eq(2995)
+      expect(rule.total_price(cf1, 4)).to eq(2995)
     end
   end
 end

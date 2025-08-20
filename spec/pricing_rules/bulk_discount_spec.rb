@@ -39,25 +39,25 @@ RSpec.describe PricingRule::BulkDiscount do
     end
   end
 
-  describe '#total_price_in_pence' do
+  describe '#total_price' do
     # 1 item = regular price = 1 * 500 = 500
     it 'charges regular price for 1 item' do
-      expect(rule.total_price_in_pence(sr1, 1)).to eq(500)
+      expect(rule.total_price(sr1, 1)).to eq(500)
     end
 
     # 2 items = regular price = 2 * 500 = 1000
     it 'charges regular price for 2 items' do
-      expect(rule.total_price_in_pence(sr1, 2)).to eq(1000)
+      expect(rule.total_price(sr1, 2)).to eq(1000)
     end
 
     # 3 items = discount price = 3 * 450 = 1350
     it 'applies bulk discount for 3 items' do
-      expect(rule.total_price_in_pence(sr1, 3)).to eq(1350)
+      expect(rule.total_price(sr1, 3)).to eq(1350)
     end
 
     # 4 items = discount price = 4 * 450 = 1800
     it 'applies bulk discount for 4 items' do
-      expect(rule.total_price_in_pence(sr1, 4)).to eq(1800)
+      expect(rule.total_price(sr1, 4)).to eq(1800)
     end
   end
 end

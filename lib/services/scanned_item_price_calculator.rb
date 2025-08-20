@@ -11,7 +11,7 @@ class ScannedItemPriceCalculator
     best_rule = find_most_beneficial_rule
 
     if best_rule
-      best_rule.total_price_in_pence(product, quantity)
+      best_rule.total_price(product, quantity)
     else
       product.price_in_pence * quantity
     end
@@ -30,7 +30,7 @@ class ScannedItemPriceCalculator
     return nil if applicable_rules.empty?
 
     applicable_rules.min_by do |rule|
-      rule.total_price_in_pence(product, quantity)
+      rule.total_price(product, quantity)
     end
   end
 end

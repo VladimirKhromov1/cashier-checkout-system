@@ -6,9 +6,9 @@ class Product
   attr_reader :code, :name, :price_in_pence, :currency
 
   def initialize(code:, name:, price_in_pence:, currency:)
-    @code = TypeValidator.validate_string!(code, 'Product code')
-    @name = TypeValidator.validate_string!(name, 'Product name')
-    @price_in_pence = TypeValidator.validate_positive_integer!(price_in_pence, 'Price in pence')
+    @code = TypeValidator.validate_string_field!(code, 'Product code')
+    @name = TypeValidator.validate_string_field!(name, 'Product name')
+    @price_in_pence = TypeValidator.validate_number_field!(price_in_pence, 'Price in pence')
     @currency = validate_currency!(currency)
     freeze
   end
@@ -16,7 +16,7 @@ class Product
   private
 
   def validate_currency!(currency)
-    curr = TypeValidator.validate_string!(currency, 'Currency').upcase
+    curr = TypeValidator.validate_string_field!(currency, 'Currency').upcase
     unless SUPPORTED_CURRENCIES.include?(curr)
       raise ArgumentError, "Unsupported currency: '#{curr}'. Supported: #{SUPPORTED_CURRENCIES.join(', ')}"
     end
