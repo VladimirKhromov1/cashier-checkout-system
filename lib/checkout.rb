@@ -1,4 +1,5 @@
 require_relative 'catalog'
+require_relative 'validators/scanned_item_validator'
 
 class Checkout
   def initialize(pricing_rules = [])
@@ -7,6 +8,7 @@ class Checkout
   end
 
   def scan(product)
+    ScannedItemValidator.new(product).validate!
     @scanned_items[product.code] += 1
   end
 
