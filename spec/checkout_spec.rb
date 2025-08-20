@@ -1,4 +1,7 @@
 require_relative '../lib/checkout'
+require_relative '../lib/pricing_rules/buy_one_get_one_free'
+require_relative '../lib/pricing_rules/bulk_discount'
+require_relative '../lib/pricing_rules/fractional_discount'
 
 RSpec.describe Checkout do
   let(:gr1) { Catalog.find('GR1') }
@@ -45,22 +48,72 @@ RSpec.describe Checkout do
       end
     end
 
-    context 'with multiple identical items' do
-      it 'calculates total for multiple Green Teas' do
-        checkout = Checkout.new
+    context 'with multiple identical items (no pricing rules)' do
+      it 'calculates total for multiple Green Teas without discounts' do
+        checkout = Checkout.new  # No rules = simple multiplication
         checkout.scan(gr1)
         checkout.scan(gr1)
-        expect(checkout.total).to eq('£6.22')
+        expect(checkout.total).to eq('£6.22')  # 2 * 311 = 622p
       end
     end
 
-    context 'with mixed items' do
-      it 'calculates total for different products' do
-        checkout = Checkout.new
+    context 'with mixed items (no pricing rules)' do
+      it 'calculates total for different products without discounts' do
+        checkout = Checkout.new  # No rules = simple multiplication
+        checkout.scan(gr1)  # 311p
+        checkout.scan(sr1)  # 500p
+        checkout.scan(cf1)  # 1123p
+        expect(checkout.total).to eq('£19.34')  # 1934p total
+      end
+    end
+
+    context 'with pricing rules integration' do
+      let(:pricing_rules) do
+        [
+          BuyOneGetOneFree.new('GR1'),
+          BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450),
+          FractionalDiscount.new('CF1', min_quantity: 3, numerator: 2, denominator: 3)
+        ]
+      end
+
+      # GR1(3): BOGOF = 2*311=622p, SR1(1): regular=500p, CF1(1): regular=1123p Total: 622+500+1123=2245p = £22.45
+      it 'calculates Test case 1: GR1,SR1,GR1,GR1,CF1' do
+        checkout = Checkout.new(pricing_rules)
         checkout.scan(gr1)
         checkout.scan(sr1)
+        checkout.scan(gr1)
+        checkout.scan(gr1)
         checkout.scan(cf1)
-        expect(checkout.total).to eq('£19.34')
+        expect(checkout.total).to eq('£22.45')
+      end
+
+      # GR1(2): BOGOF = 1*311=311p Total: 311p = £3.11
+      it 'calculates Test case 2: GR1,GR1' do
+        checkout = Checkout.new(pricing_rules)
+        checkout.scan(gr1)
+        checkout.scan(gr1)
+        expect(checkout.total).to eq('£3.11')
+      end
+
+      # SR1(3): bulk = 3*450=1350p, GR1(1): regular=311p Total: 1350+311=1661p = £16.61
+      it 'calculates Test case 3: SR1,SR1,GR1,SR1' do
+        checkout = Checkout.new(pricing_rules)
+        checkout.scan(sr1)
+        checkout.scan(sr1)
+        checkout.scan(gr1)
+        checkout.scan(sr1)
+        expect(checkout.total).to eq('£16.61')
+      end
+
+      # GR1(1): regular=311p, CF1(3): fractional = (3*1123*2/3).round=2246p, SR1(1): regular=500p Total: 311+2246+500=3057p = £30.57
+      it 'calculates Test case 4: GR1,CF1,SR1,CF1,CF1' do
+        checkout = Checkout.new(pricing_rules)
+        checkout.scan(gr1)
+        checkout.scan(cf1)
+        checkout.scan(sr1)
+        checkout.scan(cf1)
+        checkout.scan(cf1)
+        expect(checkout.total).to eq('£30.57')
       end
     end
   end
