@@ -1,4 +1,3 @@
-require_relative 'catalog'
 require_relative 'services/scanned_product_amount_calculator'
 require_relative 'validators/scanned_product_validator'
 

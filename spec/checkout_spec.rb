@@ -4,9 +4,9 @@ RSpec.describe Checkout do
   subject(:checkout) { described_class.new(discount_rules: discount_rules) }
 
   let(:discount_rules) { [] }
-  let(:gr1) { Catalog.find_product(product_code: 'GR1') }
-  let(:sr1) { Catalog.find_product(product_code: 'SR1') }
-  let(:cf1) { Catalog.find_product(product_code: 'CF1') }
+  let(:green_tea) { Catalog.find_product(product_code: 'GR1') }
+  let(:strawberries) { Catalog.find_product(product_code: 'SR1') }
+  let(:coffee) { Catalog.find_product(product_code: 'CF1') }
 
   describe '#initialize' do
     context 'with no pricing rules provided' do
@@ -21,8 +21,8 @@ RSpec.describe Checkout do
       let(:discount_rules) { [DiscountRules::BuyOneGetOneFree.new(product_code: 'GR1')] }
 
       it 'initializes with the given rules' do
-        checkout.scan(product: gr1)
-        checkout.scan(product: gr1)
+        checkout.scan(product: green_tea)
+        checkout.scan(product: green_tea)
         expect(checkout.total).to eq('£3.11')
       end
     end
@@ -31,7 +31,7 @@ RSpec.describe Checkout do
   describe '#scan' do
     context 'with a valid product' do
       it 'adds the product to the basket' do
-        expect { checkout.scan(product: gr1) }.not_to raise_error
+        expect { checkout.scan(product: green_tea) }.not_to raise_error
         expect(checkout.total).to eq('£3.11')
       end
     end
@@ -57,11 +57,11 @@ RSpec.describe Checkout do
       end
     end
 
-    context 'without any pricing rules' do
+    context 'without any discount rules' do
       before do
-        checkout.scan(product: gr1) # 311
-        checkout.scan(product: sr1) # 500
-        checkout.scan(product: gr1) # 311
+        checkout.scan(product: green_tea) # 311
+        checkout.scan(product: strawberries) # 500
+        checkout.scan(product: green_tea) # 311
       end
 
       it 'calculates the sum of the product prices' do
@@ -70,7 +70,7 @@ RSpec.describe Checkout do
       end
     end
 
-    context 'with standard pricing rules' do
+    context 'with standard discount rules' do
       let(:discount_rules) do
         [
           DiscountRules::BuyOneGetOneFree.new(product_code: 'GR1'),
@@ -81,7 +81,7 @@ RSpec.describe Checkout do
 
       context 'calculates test case 1: GR1, SR1, GR1, GR1, CF1' do
         it 'returns the correct total' do
-          [gr1, sr1, gr1, gr1, cf1].each { |item| checkout.scan(product: item) }
+          [green_tea, strawberries, green_tea, green_tea, coffee].each { |item| checkout.scan(product: item) }
           # GR1(3): BOGOF -> pay for 2 = 622
           # SR1(1): regular = 500
           # CF1(1): regular = 1123
@@ -92,7 +92,7 @@ RSpec.describe Checkout do
 
       context 'calculates test case 2: GR1, GR1' do
         it 'returns the correct total' do
-          [gr1, gr1].each { |item| checkout.scan(product: item) }
+          [green_tea, green_tea].each { |item| checkout.scan(product: item) }
           # GR1(2): BOGOF -> pay for 1 = 311
           expect(checkout.total).to eq('£3.11')
         end
@@ -100,7 +100,7 @@ RSpec.describe Checkout do
 
       context 'calculates test case 3: SR1, SR1, GR1, SR1' do
         it 'returns the correct total' do
-          [sr1, sr1, gr1, sr1].each { |item| checkout.scan(product: item) }
+          [strawberries, strawberries, green_tea, strawberries].each { |item| checkout.scan(product: item) }
           # SR1(3): bulk discount -> 3 * 450 = 1350
           # GR1(1): regular = 311
           # Total: 1350 + 311 = 1661
@@ -110,7 +110,7 @@ RSpec.describe Checkout do
 
       context 'calculates test case 4: GR1, CF1, SR1, CF1, CF1' do
         it 'returns the correct total' do
-          [gr1, cf1, sr1, cf1, cf1].each { |item| checkout.scan(product: item) }
+          [green_tea, coffee, strawberries, coffee, coffee].each { |item| checkout.scan(product: item) }
           # GR1(1): regular = 311
           # CF1(3): fractional discount -> (3 * 1123 * 2/3).round = 2246
           # SR1(1): regular = 500
@@ -120,7 +120,7 @@ RSpec.describe Checkout do
       end
     end
 
-    context 'with custom pricing rules' do
+    context 'with custom discount rules' do
       let(:discount_rules) do
         [
           DiscountRules::BulkDiscount.new(product_code: 'GR1', required_quantity: 5, discounted_amount: 250),
@@ -130,27 +130,27 @@ RSpec.describe Checkout do
       end
 
       it 'applies a custom bulk discount for Green Tea' do
-        5.times { checkout.scan(product: gr1) }
+        5.times { checkout.scan(product: green_tea) }
         # Custom rule: 5 * 250 = 1250
         expect(checkout.total).to eq('£12.50')
       end
 
       it 'applies a 50% discount for Strawberries' do
-        3.times { checkout.scan(product: sr1) }
+        3.times { checkout.scan(product: strawberries) }
         # Custom fractional: (3 * 500 * 1/2).round = 750
         expect(checkout.total).to eq('£7.50')
       end
 
       it 'applies BOGOF for Coffee' do
-        3.times { checkout.scan(product: cf1) }
+        3.times { checkout.scan(product: coffee) }
         # BOGOF: pay for 2 items = 2 * 1123 = 2246
         expect(checkout.total).to eq('£22.46')
       end
 
       it 'applies the best rule for each product in a mixed cart' do
-        3.times { checkout.scan(product: gr1) } # Below threshold for bulk, so 3 * 311 = 933
-        2.times { checkout.scan(product: sr1) } # 50% discount: (2 * 500 * 1/2).round = 500
-        4.times { checkout.scan(product: cf1) } # BOGOF: pay for 2 = 2 * 1123 = 2246
+        3.times { checkout.scan(product: green_tea) } # Below threshold for bulk, so 3 * 311 = 933
+        2.times { checkout.scan(product: strawberries) } # 50% discount: (2 * 500 * 1/2).round = 500
+        4.times { checkout.scan(product: coffee) } # BOGOF: pay for 2 = 2 * 1123 = 2246
         # Total: 933 + 500 + 2246 = 3679
         expect(checkout.total).to eq('£36.79')
       end
@@ -167,7 +167,7 @@ RSpec.describe Checkout do
 
       context 'with 4 items' do
         it 'chooses the cheapest rule (BOGOF)' do
-          4.times { checkout.scan(product: gr1) }
+          4.times { checkout.scan(product: green_tea) }
           # BOGOF: 2 * 311 = 622 <- Cheapest
           # Bulk: N/A
           # Fractional 10% off: (4 * 311 * 9/10).round = 1120
@@ -177,7 +177,7 @@ RSpec.describe Checkout do
 
       context 'with 6 items' do
         it 'chooses the cheapest rule (Bulk Discount)' do
-          6.times { checkout.scan(product: gr1) }
+          6.times { checkout.scan(product: green_tea) }
           # BOGOF: 3 * 311 = 933
           # Bulk: 6 * 150 = 900 <- Cheapest
           # Fractional 10% off: (6 * 311 * 9/10).round = 1679
