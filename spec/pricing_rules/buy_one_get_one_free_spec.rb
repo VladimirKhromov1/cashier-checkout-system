@@ -8,6 +8,13 @@ RSpec.describe PricingRule::BuyOneGetOneFree do
     it 'inherits from PricingRule::Base' do
       expect(rule).to be_a(PricingRule::Base)
     end
+
+    context 'freeze protection' do
+      it 'freezes the instance after initialization' do
+        rule = PricingRule::BuyOneGetOneFree.new('GR1')
+        expect(rule).to be_frozen
+      end
+    end
   end
 
   describe '#total_price_in_pence' do
