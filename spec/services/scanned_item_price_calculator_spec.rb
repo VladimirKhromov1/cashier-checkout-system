@@ -1,13 +1,15 @@
 require_relative '../../lib/services/scanned_item_price_calculator'
 require_relative '../../lib/catalog'
 require_relative '../../lib/product'
+require_relative '../../lib/pricing_rules/base'
 require_relative '../../lib/pricing_rules/buy_one_get_one_free'
 require_relative '../../lib/pricing_rules/bulk_discount'
 
 RSpec.describe ScannedItemPriceCalculator do
   describe '#call' do
-    let(:bogof_rule) { BuyOneGetOneFree.new('GR1') }
-    let(:bulk_rule) { BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450) }
+    let(:bogof_rule) { PricingRule::BuyOneGetOneFree.new('GR1') }
+    let(:bulk_rule) { PricingRule::BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450) }
+    let(:alternative_rule) { PricingRule::BulkDiscount.new('GR1', min_quantity: 2, discounted_price_in_pence: 280) }
 
     context 'when no applicable rules' do
       it 'returns regular price calculation' do
@@ -40,6 +42,21 @@ RSpec.describe ScannedItemPriceCalculator do
         )
 
         expect(calculator.call).to eq(1350) # 450 * 3
+      end
+    end
+
+    context 'when multiple rules apply to the same product' do
+      it 'chooses the most beneficial rule for customer' do
+        calculator = ScannedItemPriceCalculator.new(
+          product_code: 'GR1',
+          quantity: 4,
+          rules: [alternative_rule, bogof_rule]
+        )
+
+        # BOGOF: pay for 2 items = 622 pence
+        # Bulk: pay 280 * 4 = 1120 pence
+        # Should choose BOGOF as it's cheaper
+        expect(calculator.call).to eq(622)
       end
     end
   end
