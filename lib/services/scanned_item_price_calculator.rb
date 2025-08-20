@@ -8,10 +8,10 @@ class ScannedItemPriceCalculator
   end
 
   def call
-    applicable_rule = find_applicable_rule
+    best_rule = find_most_beneficial_rule
 
-    if applicable_rule
-      applicable_rule.total_price_in_pence(product, quantity)
+    if best_rule
+      best_rule.total_price_in_pence(product, quantity)
     else
       product.price_in_pence * quantity
     end
@@ -25,7 +25,12 @@ class ScannedItemPriceCalculator
     Catalog.find(product_code)
   end
 
-  def find_applicable_rule
-    rules.find { |rule| rule.applies_to?(product) }
+  def find_most_beneficial_rule
+    applicable_rules = rules.select { |rule| rule.applies_to?(product) }
+    return nil if applicable_rules.empty?
+
+    applicable_rules.min_by do |rule|
+      rule.total_price_in_pence(product, quantity)
+    end
   end
 end
