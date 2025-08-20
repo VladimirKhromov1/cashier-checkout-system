@@ -7,7 +7,7 @@ module DiscountRules
   class FractionalDiscount < Base
     def initialize(product_code:, required_quantity:, numerator:, denominator:)
       super(product_code: product_code)
-      @required_quantity = TypeValidator.validate_number_field!(required_quantity, 'Required quantity')
+      @required_quantity = TypeValidator.validate_number_field!(value: required_quantity, field_name: 'Required quantity')
       @ratio = validate_ratio!(numerator, denominator)
       freeze
     end
@@ -22,8 +22,8 @@ module DiscountRules
     attr_reader :required_quantity, :ratio
 
     def validate_ratio!(numerator, denominator)
-      num = TypeValidator.validate_number_field!(numerator, 'Numerator')
-      den = TypeValidator.validate_number_field!(denominator, 'Denominator')
+      num = TypeValidator.validate_number_field!(value: numerator, field_name: 'Numerator')
+      den = TypeValidator.validate_number_field!(value: denominator, field_name: 'Denominator')
 
       unless num < den
         raise ArgumentError, "Numerator (#{num}) must be less than denominator (#{den}) for a discount rule"

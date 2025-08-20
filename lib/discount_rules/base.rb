@@ -22,7 +22,7 @@ module DiscountRules
     private
 
     def validate_code!(product_code)
-      c = TypeValidator.validate_string_field!(product_code, 'Product code for rule')
+      c = TypeValidator.validate_string_field!(value: product_code, field_name: 'Product code for rule')
       unless Catalog.product_exists?(product_code: c)
         known_products = Catalog::PRODUCTS.keys.join(', ')
         raise ArgumentError, "Rule cannot be created for unknown product: '#{c}'. Known products: #{known_products}"

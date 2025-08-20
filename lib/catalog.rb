@@ -7,11 +7,13 @@ module Catalog
     'CF1' => Product.new(code: 'CF1', name: 'Coffee', amount: 1123, currency: 'GBP')
   }.freeze
 
-  def self.find_product(product_code:)
+  def find_product(product_code:)
     PRODUCTS[product_code]
   end
 
-  def self.product_exists?(product_code:)
+  def product_exists?(product_code:)
     PRODUCTS.key?(product_code)
   end
+
+  module_function :find_product, :product_exists?
 end

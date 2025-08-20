@@ -7,8 +7,8 @@ module DiscountRules
   class BulkDiscount < Base
     def initialize(product_code:, required_quantity:, discounted_amount:)
       super(product_code: product_code)
-      @required_quantity = TypeValidator.validate_number_field!(required_quantity, 'Required quantity')
-      @discounted_amount = TypeValidator.validate_number_field!(discounted_amount, 'Discounted amount')
+      @required_quantity = TypeValidator.validate_number_field!(value: required_quantity, field_name: 'Required quantity')
+      @discounted_amount = TypeValidator.validate_number_field!(value: discounted_amount, field_name: 'Discounted amount')
       freeze
     end
 

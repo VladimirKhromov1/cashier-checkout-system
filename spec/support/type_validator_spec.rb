@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe TypeValidator do
   describe '.validate_string_field!' do
-    subject(:validate) { described_class.validate_string_field!(value, field_name) }
+    subject(:validate) { described_class.validate_string_field!(value: value, field_name: field_name) }
 
     let(:field_name) { 'Test Field' }
 
@@ -32,7 +32,7 @@ RSpec.describe TypeValidator do
   end
 
   describe '.validate_number_field!' do
-    subject(:validate) { described_class.validate_number_field!(value, field_name) }
+    subject(:validate) { described_class.validate_number_field!(value: value, field_name: field_name) }
 
     let(:field_name) { 'Test Field' }
 
