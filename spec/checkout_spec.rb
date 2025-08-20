@@ -70,9 +70,9 @@ RSpec.describe Checkout do
     context 'with pricing rules integration' do
       let(:pricing_rules) do
         [
-          BuyOneGetOneFree.new('GR1'),
-          BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450),
-          FractionalDiscount.new('CF1', min_quantity: 3, numerator: 2, denominator: 3)
+          PricingRule::BuyOneGetOneFree.new('GR1'),
+          PricingRule::BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450),
+          PricingRule::FractionalDiscount.new('CF1', min_quantity: 3, numerator: 2, denominator: 3)
         ]
       end
 
