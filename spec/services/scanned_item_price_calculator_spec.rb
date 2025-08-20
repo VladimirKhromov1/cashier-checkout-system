@@ -1,4 +1,6 @@
 require_relative '../../lib/services/scanned_item_price_calculator'
+require_relative '../../lib/catalog'
+require_relative '../../lib/product'
 require_relative '../../lib/pricing_rules/buy_one_get_one_free'
 require_relative '../../lib/pricing_rules/bulk_discount'
 
