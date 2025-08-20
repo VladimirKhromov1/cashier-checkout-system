@@ -1,5 +1,6 @@
 require_relative 'catalog'
 require_relative 'validators/scanned_item_validator'
+require_relative 'services/scanned_item_price_calculator'
 
 class Checkout
   def initialize(pricing_rules = [])
@@ -23,15 +24,11 @@ class Checkout
 
   def calculate_total_pence
     scanned_items.sum do |code, quantity|
-      product = Catalog.find(code)
-
-      applicable_rule = pricing_rules.find { |rule| rule.applies_to?(product) }
-
-      if applicable_rule
-        applicable_rule.total_price_in_pence(product, quantity)
-      else
-        product.price_in_pence * quantity
-      end
+      ScannedItemPriceCalculator.new(
+        product_code: code,
+        quantity: quantity,
+        rules: pricing_rules
+      ).call
     end
   end
 
