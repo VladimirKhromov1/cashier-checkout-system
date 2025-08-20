@@ -22,6 +22,13 @@ class ScannedProductValidator
 
   def ensure_is_canonical_product!
     catalog_product = Catalog.find_product(product_code: product.code)
-    raise ArgumentError, "Scanned item for code #{product.code} is not the canonical product from Catalog" unless product.equal?(catalog_product)
+
+    unless catalog_product
+      raise ArgumentError, "Product with code '#{product.code}' does not exist in the Catalog"
+    end
+
+    unless product.equal?(catalog_product)
+      raise ArgumentError, "Scanned item for code #{product.code} is not the canonical product from Catalog"
+    end
   end
 end

@@ -29,5 +29,14 @@ RSpec.describe ScannedProductValidator do
           .to raise_error(ArgumentError, 'Scanned item for code GR1 is not the canonical product from Catalog')
       end
     end
+
+    context 'when the scanned product code does not exist in the Catalog' do
+      let(:product) { Product.new(code: 'INVALID', name: 'Invalid Product', amount: 999, currency: 'GBP') }
+
+      it 'raises an ArgumentError with a specific message' do
+        expect { validator.validate! }
+          .to raise_error(ArgumentError, "Product with code 'INVALID' does not exist in the Catalog")
+      end
+    end
   end
 end
