@@ -22,7 +22,14 @@ class Checkout
   def calculate_total_pence
     scanned_items.sum do |code, quantity|
       product = Catalog.find(code)
-      product.price_in_pence * quantity
+
+      applicable_rule = pricing_rules.find { |rule| rule.applies_to?(product) }
+
+      if applicable_rule
+        applicable_rule.total_price_in_pence(product, quantity)
+      else
+        product.price_in_pence * quantity
+      end
     end
   end
 
