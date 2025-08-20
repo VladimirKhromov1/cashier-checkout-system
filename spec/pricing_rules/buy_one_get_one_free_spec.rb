@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe PricingRule::BuyOneGetOneFree do
   let(:gr1) { Catalog.find('GR1') }
-  let(:rule) { PricingRule::BuyOneGetOneFree.new('GR1') }
+  let(:rule) { PricingRule::BuyOneGetOneFree.new(product_code: 'GR1') }
 
   describe '#initialize' do
     it 'inherits from PricingRule::Base' do
@@ -11,7 +11,7 @@ RSpec.describe PricingRule::BuyOneGetOneFree do
 
     context 'freeze protection' do
       it 'freezes the instance after initialization' do
-        rule = PricingRule::BuyOneGetOneFree.new('GR1')
+        rule = PricingRule::BuyOneGetOneFree.new(product_code: 'GR1')
         expect(rule).to be_frozen
       end
     end

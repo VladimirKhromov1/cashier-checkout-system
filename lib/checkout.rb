@@ -9,7 +9,7 @@ class Checkout
   end
 
   def scan(product)
-    ScannedItemValidator.new(product).validate!
+    ScannedItemValidator.new(product_item: product).validate!
     @scanned_items[product.code] += 1
   end
 

@@ -4,8 +4,8 @@ require_relative 'base'
 
 module PricingRule
   class BuyOneGetOneFree < Base
-    def initialize(product_code)
-      super(product_code)
+    def initialize(product_code:)
+      super(product_code: product_code)
       freeze
     end
 

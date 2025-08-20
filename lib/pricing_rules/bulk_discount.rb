@@ -5,8 +5,8 @@ require_relative '../support/type_validator'
 
 module PricingRule
   class BulkDiscount < Base
-    def initialize(product_code, min_quantity:, discounted_price_in_pence:)
-      super(product_code)
+    def initialize(product_code:, min_quantity:, discounted_price_in_pence:)
+      super(product_code: product_code)
       @min_quantity = TypeValidator.validate_positive_integer!(min_quantity, 'Minimum quantity')
       @discounted_price_in_pence = TypeValidator.validate_positive_integer!(discounted_price_in_pence, 'Discounted price')
       freeze

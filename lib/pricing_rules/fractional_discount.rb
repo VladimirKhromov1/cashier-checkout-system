@@ -5,8 +5,8 @@ require_relative '../support/type_validator'
 
 module PricingRule
   class FractionalDiscount < Base
-    def initialize(product_code, min_quantity:, numerator:, denominator:)
-      super(product_code)
+    def initialize(product_code:, min_quantity:, numerator:, denominator:)
+      super(product_code: product_code)
       @min_quantity = TypeValidator.validate_positive_integer!(min_quantity, 'Minimum quantity')
       @ratio = validate_ratio!(numerator, denominator)
       freeze

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 RSpec.describe PricingRule::BulkDiscount do
   let(:sr1) { Catalog.find('SR1') }
-  let(:rule) { PricingRule::BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450) }
+  let(:rule) { PricingRule::BulkDiscount.new(product_code: 'SR1', min_quantity: 3, discounted_price_in_pence: 450) }
 
   describe '#initialize' do
     it 'inherits from PricingRule::Base' do
@@ -11,29 +11,29 @@ RSpec.describe PricingRule::BulkDiscount do
 
     context 'freeze protection' do
       it 'freezes the instance after initialization' do
-        rule = PricingRule::BulkDiscount.new('GR1', min_quantity: 3, discounted_price_in_pence: 200)
+        rule = PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 3, discounted_price_in_pence: 200)
         expect(rule).to be_frozen
       end
     end
 
     context 'validations' do
       it 'validates min_quantity is a positive integer' do
-        expect { PricingRule::BulkDiscount.new('GR1', min_quantity: 'invalid', discounted_price_in_pence: 200) }
+        expect { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 'invalid', discounted_price_in_pence: 200) }
           .to raise_error(ArgumentError, 'Minimum quantity must be an Integer')
       end
 
       it 'validates min_quantity is positive' do
-        expect { PricingRule::BulkDiscount.new('GR1', min_quantity: 0, discounted_price_in_pence: 200) }
+        expect { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 0, discounted_price_in_pence: 200) }
           .to raise_error(ArgumentError, 'Minimum quantity must be positive')
       end
 
       it 'validates discounted_price_in_pence is a positive integer' do
-        expect { PricingRule::BulkDiscount.new('GR1', min_quantity: 3, discounted_price_in_pence: 'invalid') }
+        expect { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 3, discounted_price_in_pence: 'invalid') }
           .to raise_error(ArgumentError, 'Discounted price must be an Integer')
       end
 
       it 'validates discounted_price_in_pence is positive' do
-        expect { PricingRule::BulkDiscount.new('GR1', min_quantity: 3, discounted_price_in_pence: 0) }
+        expect { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 3, discounted_price_in_pence: 0) }
           .to raise_error(ArgumentError, 'Discounted price must be positive')
       end
     end

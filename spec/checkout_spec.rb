@@ -67,9 +67,9 @@ RSpec.describe Checkout do
     context 'with pricing rules integration' do
       let(:pricing_rules) do
         [
-          PricingRule::BuyOneGetOneFree.new('GR1'),
-          PricingRule::BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450),
-          PricingRule::FractionalDiscount.new('CF1', min_quantity: 3, numerator: 2, denominator: 3)
+          PricingRule::BuyOneGetOneFree.new(product_code: 'GR1'),
+          PricingRule::BulkDiscount.new(product_code: 'SR1', min_quantity: 3, discounted_price_in_pence: 450),
+          PricingRule::FractionalDiscount.new(product_code: 'CF1', min_quantity: 3, numerator: 2, denominator: 3)
         ]
       end
 
@@ -118,9 +118,9 @@ RSpec.describe Checkout do
       context 'when using different discount rules than standard' do
         let(:custom_rules) do
           [
-            PricingRule::BulkDiscount.new('GR1', min_quantity: 5, discounted_price_in_pence: 250),  # Better bulk for 5+ items
-            PricingRule::FractionalDiscount.new('SR1', min_quantity: 2, numerator: 1, denominator: 2),  # 50% off for 2+ strawberries
-            PricingRule::BuyOneGetOneFree.new('CF1')  # BOGOF for coffee instead of fractional
+            PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 5, discounted_price_in_pence: 250),  # Better bulk for 5+ items
+            PricingRule::FractionalDiscount.new(product_code: 'SR1', min_quantity: 2, numerator: 1, denominator: 2),  # 50% off for 2+ strawberries
+            PricingRule::BuyOneGetOneFree.new(product_code: 'CF1')  # BOGOF for coffee instead of fractional
           ]
         end
 
@@ -152,9 +152,9 @@ RSpec.describe Checkout do
       context 'best discount selection with competing rules' do
         let(:competing_rules) do
           [
-            PricingRule::BuyOneGetOneFree.new('GR1'),  # BOGOF
-            PricingRule::BulkDiscount.new('GR1', min_quantity: 3, discounted_price_in_pence: 200),  # Very cheap bulk
-            PricingRule::FractionalDiscount.new('GR1', min_quantity: 4, numerator: 1, denominator: 3)  # 33% of original
+            PricingRule::BuyOneGetOneFree.new(product_code: 'GR1'),  # BOGOF
+            PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 3, discounted_price_in_pence: 200),  # Very cheap bulk
+            PricingRule::FractionalDiscount.new(product_code: 'GR1', min_quantity: 4, numerator: 1, denominator: 3)  # 33% of original
           ]
         end
 
@@ -182,9 +182,9 @@ RSpec.describe Checkout do
       context 'mixed cart with custom rules' do
         let(:mixed_rules) do
           [
-            PricingRule::BulkDiscount.new('GR1', min_quantity: 2, discounted_price_in_pence: 280),
-            PricingRule::BuyOneGetOneFree.new('SR1'),
-            PricingRule::FractionalDiscount.new('CF1', min_quantity: 2, numerator: 3, denominator: 4)
+            PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 2, discounted_price_in_pence: 280),
+            PricingRule::BuyOneGetOneFree.new(product_code: 'SR1'),
+            PricingRule::FractionalDiscount.new(product_code: 'CF1', min_quantity: 2, numerator: 3, denominator: 4)
           ]
         end
 

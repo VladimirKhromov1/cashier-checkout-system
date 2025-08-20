@@ -2,9 +2,9 @@ require 'spec_helper'
 
 RSpec.describe ScannedItemPriceCalculator do
   describe '#call' do
-    let(:bogof_rule) { PricingRule::BuyOneGetOneFree.new('GR1') }
-    let(:bulk_rule) { PricingRule::BulkDiscount.new('SR1', min_quantity: 3, discounted_price_in_pence: 450) }
-    let(:alternative_rule) { PricingRule::BulkDiscount.new('GR1', min_quantity: 2, discounted_price_in_pence: 280) }
+    let(:bogof_rule) { PricingRule::BuyOneGetOneFree.new(product_code: 'GR1') }
+    let(:bulk_rule) { PricingRule::BulkDiscount.new(product_code: 'SR1', min_quantity: 3, discounted_price_in_pence: 450) }
+    let(:alternative_rule) { PricingRule::BulkDiscount.new(product_code: 'GR1', min_quantity: 2, discounted_price_in_pence: 280) }
 
     context 'when no applicable rules' do
       it 'returns regular price calculation' do
