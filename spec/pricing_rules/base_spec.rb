@@ -8,8 +8,11 @@ RSpec.describe PricingRule::Base do
     end
 
     it 'raises error for unknown product code' do
+      known_products = Catalog::PRODUCTS.keys.join(', ')
+      expected_message = "Rule cannot be created for unknown product: 'UNKNOWN'. Known products: #{known_products}"
+
       expect { PricingRule::Base.new('UNKNOWN') }
-        .to raise_error(ArgumentError, /Rule cannot be created for unknown product: 'UNKNOWN'/)
+        .to raise_error(ArgumentError, expected_message)
     end
   end
 
