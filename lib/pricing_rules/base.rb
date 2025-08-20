@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+require_relative '../support/type_validator'
 require_relative '../catalog'
 
 module PricingRule
@@ -19,11 +22,12 @@ module PricingRule
     private
 
     def validate_code!(code)
-      unless Catalog.exists?(code)
+      c = TypeValidator.validate_string!(code, 'Product code for rule')
+      unless Catalog.exists?(c)
         known_products = Catalog::PRODUCTS.keys.join(', ')
-        raise ArgumentError, "Rule cannot be created for unknown product: '#{code}'. Known products: #{known_products}"
+        raise ArgumentError, "Rule cannot be created for unknown product: '#{c}'. Known products: #{known_products}"
       end
-      code
+      c
     end
   end
 end
