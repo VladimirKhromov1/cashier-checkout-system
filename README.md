@@ -4,7 +4,7 @@
 
 ## Requirements
 
-- **Ruby**: >= 2.4.0
+- **Ruby**: >= 2.7.0
 - **Bundler**: for dependency management
 
 ## Quick Start
