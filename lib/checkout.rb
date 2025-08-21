@@ -1,5 +1,5 @@
-require_relative 'services/scanned_product_amount_calculator'
-require_relative 'validators/scanned_product_validator'
+require_relative 'services/product_amount_calculator'
+require_relative 'validators/product_validator'
 
 class Checkout
   def initialize(discount_rules: [])
@@ -8,7 +8,7 @@ class Checkout
   end
 
   def scan(product:)
-    ScannedProductValidator.new(product: product).validate!
+    ProductValidator.new(product: product).validate!
     @scanned_products[product.code] += 1
   end
 
@@ -23,7 +23,7 @@ class Checkout
 
   def calculate_total_amount
     scanned_products.sum do |product_code, quantity|
-      ScannedProductAmountCalculator.new(
+      ProductAmountCalculator.new(
         product_code: product_code,
         quantity: quantity,
         rules: discount_rules

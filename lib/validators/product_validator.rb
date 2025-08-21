@@ -1,7 +1,7 @@
 require_relative '../product'
 require_relative '../catalog'
 
-class ScannedProductValidator
+class ProductValidator
   def initialize(product:)
     @product = product
   end

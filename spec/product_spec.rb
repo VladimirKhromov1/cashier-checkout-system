@@ -53,6 +53,20 @@ RSpec.describe Product do
           expect { product }.to raise_error(ArgumentError, 'Amount must be positive')
         end
       end
+
+      context 'when the amount is a float' do
+        let(:amount) { 3.14 }
+        it 'raises an ArgumentError' do
+          expect { product }.to raise_error(ArgumentError, 'Amount must be an Integer')
+        end
+      end
+
+      context 'when the currency is not supported' do
+        let(:currency) { 'USD' }
+        it 'raises an ArgumentError' do
+          expect { product }.to raise_error(ArgumentError, "Unsupported currency: 'USD'. Supported: GBP")
+        end
+      end
     end
   end
 end

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe ScannedProductValidator do
+RSpec.describe ProductValidator do
   subject(:validator) { described_class.new(product: product) }
 
   describe '#validate!' do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe ScannedProductAmountCalculator do
+RSpec.describe ProductAmountCalculator do
   subject(:calculator) { described_class.new(product_code: product_code, quantity: quantity, rules: rules) }
 
   let(:product_code) { 'GR1' }

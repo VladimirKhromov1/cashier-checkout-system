@@ -1,6 +1,6 @@
 require_relative '../catalog'
 
-class ScannedProductAmountCalculator
+class ProductAmountCalculator
   def initialize(product_code:, quantity:, rules:)
     @product_code = product_code
     @quantity = quantity
