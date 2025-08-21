@@ -1,17 +1,17 @@
 require 'spec_helper'
 
 RSpec.describe DiscountRules::FractionalDiscount do
-  subject(:rule) { described_class.new(product_code: 'CF1', required_quantity: 3, numerator: 2, denominator: 3) }
+  subject(:fractional_discount_rule) { described_class.new(product_code: 'CF1', required_quantity: 3, numerator: 2, denominator: 3) }
 
   let(:coffee) { Catalog.find_product(product_code: 'CF1') }
 
   describe '#initialize' do
     it 'inherits from DiscountRules::Base' do
-      expect(rule).to be_a(DiscountRules::Base)
+      expect(fractional_discount_rule).to be_a(DiscountRules::Base)
     end
 
     it 'is frozen' do
-      expect(rule).to be_frozen
+      expect(fractional_discount_rule).to be_frozen
     end
 
     context 'with validations' do
@@ -54,24 +54,24 @@ RSpec.describe DiscountRules::FractionalDiscount do
     context 'when quantity is below threshold' do
       # 1 item = regular price = 1 * 1123 = 1123
       it 'charges regular price for 1 item' do
-        expect(rule.total_amount(product: coffee, quantity: 1)).to eq(1123)
+        expect(fractional_discount_rule.total_amount(product: coffee, quantity: 1)).to eq(1123)
       end
 
       # 2 items = regular price = 2 * 1123 = 2246
       it 'charges regular price for 2 items' do
-        expect(rule.total_amount(product: coffee, quantity: 2)).to eq(2246)
+        expect(fractional_discount_rule.total_amount(product: coffee, quantity: 2)).to eq(2246)
       end
     end
 
     context 'when quantity meets or exceeds threshold' do
       # 3 items = discounted price = 3 * (1123 * 2/3) = 3369 * 2/3 = 2246
-      it 'applies fractional discount for 3 items' do
-        expect(rule.total_amount(product: coffee, quantity: 3)).to eq(2246)
+      it 'applies fractional pricing for 3 items' do
+        expect(fractional_discount_rule.total_amount(product: coffee, quantity: 3)).to eq(2246)
       end
 
       # 4 items = discounted price = 4 * (1123 * 2/3) = 4492 * 2/3 = 2995
-      it 'applies fractional discount for 4 items' do
-        expect(rule.total_amount(product: coffee, quantity: 4)).to eq(2995)
+      it 'applies fractional pricing for 4 items' do
+        expect(fractional_discount_rule.total_amount(product: coffee, quantity: 4)).to eq(2995)
       end
     end
   end

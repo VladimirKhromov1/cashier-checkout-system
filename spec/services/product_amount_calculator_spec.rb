@@ -26,7 +26,7 @@ RSpec.describe ProductAmountCalculator do
         let(:quantity) { 3 }
         let(:rules) { [bogof_rule] }
 
-        it 'applies the BOGOF discount' do
+        it 'applies the BOGOF rule' do
           # Pay for 2 items: 2 * 311 pence = 622
           expect(calculator.call).to eq(622)
         end
@@ -37,7 +37,7 @@ RSpec.describe ProductAmountCalculator do
         let(:quantity) { 3 }
         let(:rules) { [bulk_rule_sr1] }
 
-        it 'applies the bulk discount' do
+        it 'applies the bulk discount rule' do
           # 3 items * 450 pence = 1350
           expect(calculator.call).to eq(1350)
         end
