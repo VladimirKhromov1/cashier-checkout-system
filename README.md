@@ -55,7 +55,7 @@ Basket: SR1,SR1,GR1,SR1 => £16.61
 Basket: GR1,CF1,SR1,CF1,CF1 => £30.57
 ```
 
-## Usage
+## Usage Example
 
 ```ruby
 require_relative 'lib/checkout'
@@ -74,9 +74,11 @@ discount_rules = [
 # Create checkout
 co = Checkout.new(discount_rules: discount_rules)
 
-# Find needed products in catalog and scan
+# Find products in catalog
 green_tea = Catalog.find_product(product_code: 'GR1')
-co.scan(product: green_tea)
+
+# Scan 2 green teas
+2.times { co.scan(product: green_tea) }
 
 # Get total
 price = co.total  # "£3.11"
