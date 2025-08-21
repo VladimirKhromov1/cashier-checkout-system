@@ -19,7 +19,7 @@ bundle install
 ### 2. Verify Assignment
 ```bash
 # Run all assignment test cases
-rake verify_test_assignment
+rake verify_assignment
 
 # Run tests with coverage report
 bundle exec rspec --format documentation

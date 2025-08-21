@@ -5,7 +5,7 @@ require_relative 'lib/discount_rules/bulk_discount'
 require_relative 'lib/discount_rules/fractional_discount'
 
 desc "Verify assignment test cases"
-task :verify_test_assignment do
+task :verify_assignment do
   puts "Assignment Test Cases:"
   puts "====================="
   
