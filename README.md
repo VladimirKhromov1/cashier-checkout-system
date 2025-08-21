@@ -1,18 +1,90 @@
 # Cashier Checkout System
 
-## Setup
+> Flexible checkout system for a supermarket chain
+
+## Requirements
+
+- **Ruby**: >= 2.7.0 (tested with Ruby 3.x)
+- **Bundler**: for dependency management
+
+## Quick Start
+
+### 1. Clone and Install
 ```bash
+git clone <repository-url>
+cd cashier-checkout-system
 bundle install
 ```
 
-## Running Tests
+### 2. Verify Assignment
 ```bash
-bundle exec rspec
+# Run all assignment test cases
+rake verify_test_assignment
+
+# Run tests with coverage report
+bundle exec rspec --format documentation
+```
+
+## Assignment
+
+### Registered Products
+| Code | Name | Price |
+|------|------|-------|
+| GR1 | Green tea | £3.11 |
+| SR1 | Strawberries | £5.00 |
+| CF1 | Coffee | £11.23 |
+
+### Special Conditions
+- **CEO**: Buy-one-get-one-free for green tea (GR1)
+- **COO**: Bulk discount for strawberries (SR1) - 3+ items at £4.50 each
+- **CTO**: Coffee discount (CF1) - 3+ items drop to 2/3 of original price
+
+### Interface
+```ruby
+co = Checkout.new(discount_rules: discount_rules)
+co.scan(product: item)
+co.scan(product: item)
+price = co.total
+```
+
+### Test Cases
+```
+Basket: GR1,SR1,GR1,GR1,CF1 => £22.45
+Basket: GR1,GR1 => £3.11
+Basket: SR1,SR1,GR1,SR1 => £16.61
+Basket: GR1,CF1,SR1,CF1,CF1 => £30.57
 ```
 
 ## Usage
+
 ```ruby
-co = Checkout.new(pricing_rules)
-co.scan(item)
-price = co.total
+require_relative 'lib/checkout'
+require_relative 'lib/catalog'
+require_relative 'lib/discount_rules/buy_one_get_one_free'
+require_relative 'lib/discount_rules/bulk_discount'
+require_relative 'lib/discount_rules/fractional_discount'
+
+# Setup discount rules
+discount_rules = [
+  DiscountRules::BuyOneGetOneFree.new(product_code: 'GR1'),
+  DiscountRules::BulkDiscount.new(product_code: 'SR1', required_quantity: 3, discounted_amount: 450),
+  DiscountRules::FractionalDiscount.new(product_code: 'CF1', required_quantity: 3, numerator: 2, denominator: 3)
+]
+
+# Create checkout
+co = Checkout.new(discount_rules: discount_rules)
+
+# Find needed products in catalog and scan
+green_tea = Catalog.find_product(product_code: 'GR1')
+co.scan(product: green_tea)
+
+# Get total
+price = co.total  # "£3.11"
 ```
+
+## Technical Details
+
+- **RSpec**: testing framework with full test coverage
+- **No external database**: uses in-memory catalog
+- **No Rails**: pure Ruby implementation
+- **TDD approach**: test-driven development
