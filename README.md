@@ -21,7 +21,7 @@ bundle install
 # Run all assignment test cases
 rake verify_assignment
 
-# Run tests with coverage report
+# Run all tests with coverage report
 bundle exec rspec --format documentation
 ```
 
