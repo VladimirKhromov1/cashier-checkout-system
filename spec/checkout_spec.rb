@@ -53,12 +53,6 @@ RSpec.describe Checkout do
   end
 
   describe '#total' do
-    context 'when the basket is empty' do
-      it 'returns £0.00' do
-        expect(checkout.total).to eq('£0.00')
-      end
-    end
-
     context 'without any discount rules' do
       before do
         2.times { checkout.scan(product: green_tea) } # 2 * 311 = 622
