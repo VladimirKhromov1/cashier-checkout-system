@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'services/product_amount_calculator'
 require_relative 'validators/product_validator'
 
