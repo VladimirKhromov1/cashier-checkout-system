@@ -20,7 +20,7 @@ RSpec.describe DiscountRules::Base do
 
         it 'raises ArgumentError' do
           expect { discount_rule }
-            .to raise_error(ArgumentError, 'Product code for rule must be a String')
+            .to raise_error(ArgumentError, 'Product code must be a String')
         end
       end
 
@@ -29,47 +29,35 @@ RSpec.describe DiscountRules::Base do
 
         it 'raises ArgumentError' do
           expect { discount_rule }
-            .to raise_error(ArgumentError, 'Product code for rule cannot be empty')
-        end
-      end
-
-      context 'when product does not exist in catalog' do
-        let(:product_code) { 'UNKNOWN' }
-
-        it 'raises ArgumentError with helpful message' do
-          known_products = Catalog::PRODUCTS.keys.join(', ')
-          expected_message = "Rule cannot be created for unknown product: 'UNKNOWN'. Known products: #{known_products}"
-
-          expect { discount_rule }
-            .to raise_error(ArgumentError, expected_message)
+            .to raise_error(ArgumentError, 'Product code cannot be empty')
         end
       end
     end
   end
 
   describe '#applies_to?' do
-    let(:green_tea) { Catalog.find_product(product_code: 'GR1') }
-    let(:strawberries) { Catalog.find_product(product_code: 'SR1') }
+    let(:green_tea_code) { 'GR1' }
+    let(:strawberries_code) { 'SR1' }
 
-    context 'when product matches rule product code' do
+    context 'when product matches rule' do
       it 'returns true' do
-        expect(discount_rule.applies_to?(product: green_tea)).to be true
+        expect(discount_rule.applies_to?(product_code: green_tea_code)).to be true
       end
     end
 
-    context 'when product does not match rule product code' do
+    context 'when product does not match rule' do
       it 'returns false' do
-        expect(discount_rule.applies_to?(product: strawberries)).to be false
+        expect(discount_rule.applies_to?(product_code: strawberries_code)).to be false
       end
     end
   end
 
   describe '#total_amount' do
-    let(:product) { Catalog.find_product(product_code: 'GR1') }
+    let(:green_tea_price) { 311 }
     let(:quantity) { 1 }
 
     it 'raises NotImplementedError as base implementation' do
-      expect { discount_rule.total_amount(product: product, quantity: quantity) }
+      expect { discount_rule.total_amount(original_amount: green_tea_price, quantity: quantity) }
         .to raise_error(NotImplementedError, /must be implemented in the subclasses/)
     end
   end
