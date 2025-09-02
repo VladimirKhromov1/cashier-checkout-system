@@ -13,6 +13,17 @@ module Catalog
     PRODUCTS[product_code]
   end
 
+  def self.find_product!(product_code:)
+    product = find_product(product_code: product_code)
+    
+    unless product
+      known_products = PRODUCTS.keys.join(', ')
+      raise ArgumentError, "Product with code '#{product_code}' does not exist in the Catalog. Known products: #{known_products}"
+    end
+    
+    product
+  end
+
   def self.product_exists?(product_code:)
     PRODUCTS.key?(product_code)
   end
