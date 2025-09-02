@@ -13,7 +13,7 @@ class ProductAmountCalculator
     best_rule = find_most_beneficial_rule
 
     if best_rule
-      best_rule.total_amount(product: product, quantity: quantity)
+      best_rule.total_amount(original_amount: product.amount, quantity: quantity)
     else
       product.amount * quantity
     end
@@ -28,11 +28,11 @@ class ProductAmountCalculator
   end
 
   def find_most_beneficial_rule
-    applicable_rules = rules.select { |rule| rule.applies_to?(product: product) }
+    applicable_rules = rules.select { |rule| rule.applies_to?(product_code: product.code) }
     return nil if applicable_rules.empty?
 
     applicable_rules.min_by do |rule|
-      rule.total_amount(product: product, quantity: quantity)
+      rule.total_amount(original_amount: product.amount, quantity: quantity)
     end
   end
 end
