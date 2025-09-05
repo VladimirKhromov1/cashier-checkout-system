@@ -36,6 +36,35 @@ RSpec.describe Catalog do
     end
   end
 
+  describe '.find_product!' do
+    subject(:find_product!) { described_class.find_product!(product_code: product_code) }
+
+    context 'when the product exists' do
+      let(:product_code) { 'GR1' }
+
+      it 'returns the product' do
+        expect(find_product!).to have_attributes(
+          code: 'GR1',
+          name: 'Green tea',
+          amount: 311,
+          currency: 'GBP'
+        )
+      end
+    end
+
+    context 'when the product does not exist' do
+      let(:product_code) { 'UNKNOWN' }
+
+      it 'raises ArgumentError with known products' do
+        known_products = described_class::PRODUCTS.keys.join(', ')
+        expected_message = "Product with code 'UNKNOWN' does not exist in the Catalog. Known products: #{known_products}"
+        
+        expect { find_product! }
+          .to raise_error(ArgumentError, expected_message)
+      end
+    end
+  end
+
   describe '.product_exists?' do
     subject(:product_exists) { described_class.product_exists?(product_code: product_code) }
 

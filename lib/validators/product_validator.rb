@@ -9,28 +9,23 @@ class ProductValidator
   end
 
   def validate!
-    ensure_is_product_object!
-    ensure_is_canonical_product!
-    product
+    ensure_matches_catalog!
   end
 
   private
 
   attr_reader :product
 
-  def ensure_is_product_object!
-    raise ArgumentError, "Item must be a Product object, got: #{product.class}" unless product.is_a?(Product)
+  def ensure_matches_catalog!
+    catalog_product = Catalog.find_product!(product_code: product.code)
+    ensure_attributes_match!(catalog_product)
+  rescue NoMethodError
+    raise ArgumentError, "Item must be a Product object, got: #{product.class}"
   end
 
-  def ensure_is_canonical_product!
-    catalog_product = Catalog.find_product(product_code: product.code)
-
-    unless catalog_product
-      raise ArgumentError, "Product with code '#{product.code}' does not exist in the Catalog"
-    end
-
-    unless product.equal?(catalog_product)
-      raise ArgumentError, "Scanned item for code #{product.code} is not the canonical product from Catalog"
+  def ensure_attributes_match!(catalog_product)
+    unless catalog_product.matches?(product: product)
+      raise ArgumentError, "Scanned item for code #{product.code} does not match canonical product from Catalog"
     end
   end
 end
