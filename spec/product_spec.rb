@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Product do
@@ -66,6 +68,51 @@ RSpec.describe Product do
         it 'raises an ArgumentError' do
           expect { product }.to raise_error(ArgumentError, "Unsupported currency: 'USD'. Supported: GBP")
         end
+      end
+    end
+  end
+
+  describe '#matches?' do
+    let(:other_product) { described_class.new(code: other_code, name: other_name, amount: other_amount, currency: other_currency) }
+    
+    context 'when products have identical attributes' do
+      let(:other_code) { code }
+      let(:other_name) { name }
+      let(:other_amount) { amount }
+      let(:other_currency) { currency }
+      
+      it 'returns true' do
+        expect(product.matches?(product: other_product)).to be true
+      end
+    end
+    
+    context 'when products have different attributes' do
+      context 'when code differs' do
+        let(:other_code) { 'SR1' }
+        let(:other_name) { name }
+        let(:other_amount) { amount }
+        let(:other_currency) { currency }
+        
+        it 'returns false' do
+          expect(product.matches?(product: other_product)).to be false
+        end
+      end
+      
+      context 'when amount differs' do
+        let(:other_code) { code }
+        let(:other_name) { name }
+        let(:other_amount) { 500 }
+        let(:other_currency) { currency }
+        
+        it 'returns false' do
+          expect(product.matches?(product: other_product)).to be false
+        end
+      end
+    end
+    
+    context 'when comparing with non-Product object' do
+      it 'returns false' do
+        expect(product.matches?(product: 'not_a_product')).to be false
       end
     end
   end

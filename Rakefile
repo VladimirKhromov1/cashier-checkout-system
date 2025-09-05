@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'lib/checkout'
 require_relative 'lib/catalog'
 require_relative 'lib/discount_rules/buy_one_get_one_free'

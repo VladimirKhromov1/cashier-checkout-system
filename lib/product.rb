@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'support/type_validator'
 
 class Product
@@ -13,7 +15,18 @@ class Product
     freeze
   end
 
+  def matches?(product:)
+    product.is_a?(self.class) && matches_attributes?(product)
+  end
+
   private
+
+  def matches_attributes?(product)
+      code == product.code &&
+      name == product.name &&
+      amount == product.amount &&
+      currency == product.currency
+  end
 
   def validate_currency!(currency)
     curr = TypeValidator.validate_string_field!(value: currency, field_name: 'Currency').upcase

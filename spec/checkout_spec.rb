@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Checkout do
@@ -44,10 +46,10 @@ RSpec.describe Checkout do
           .to raise_error(ArgumentError, 'Item must be a Product object, got: String')
       end
 
-      it 'raises an error if the product is not from the catalog' do
+      it 'raises an error if the product attributes do not match catalog' do
         fake_product = Product.new(code: 'GR1', name: 'Green Tea', amount: 999, currency: 'GBP')
         expect { checkout.scan(product: fake_product) }
-          .to raise_error(ArgumentError, 'Scanned item for code GR1 is not the canonical product from Catalog')
+          .to raise_error(ArgumentError, 'Scanned item for code GR1 does not match canonical product from Catalog')
       end
     end
   end
