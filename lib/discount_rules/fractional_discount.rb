@@ -12,9 +12,9 @@ module DiscountRules
       freeze
     end
 
-    def total_amount(product:, quantity:)
-      return quantity * product.amount if quantity < required_quantity
-      (quantity * product.amount * ratio).round
+    def total_amount(original_amount:, quantity:)
+      return quantity * original_amount if quantity < required_quantity
+      (quantity * original_amount * ratio).round
     end
 
     private

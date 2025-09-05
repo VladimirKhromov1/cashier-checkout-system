@@ -12,8 +12,8 @@ module DiscountRules
       freeze
     end
 
-    def total_amount(product:, quantity:)
-      unit_amount = determine_unit_amount(product: product, quantity: quantity)
+    def total_amount(original_amount:, quantity:)
+      unit_amount = determine_unit_amount(original_amount, quantity)
       quantity * unit_amount
     end
 
@@ -21,8 +21,8 @@ module DiscountRules
 
     attr_reader :required_quantity, :discounted_amount
 
-    def determine_unit_amount(product:, quantity:)
-      quantity >= required_quantity ? discounted_amount : product.amount
+    def determine_unit_amount(original_amount, quantity)
+      quantity >= required_quantity ? discounted_amount : original_amount
     end
   end
 end
